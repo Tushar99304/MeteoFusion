@@ -1,0 +1,75 @@
+import type { Location } from '../types';
+
+export const POPULAR_LOCATIONS: Location[] = [
+  {
+    id: 'mumbai',
+    name: 'Mumbai',
+    state: 'Maharashtra',
+    district: 'Mumbai Suburban',
+    lat: 19.0760,
+    lng: 72.8777,
+    isPopular: true,
+  },
+  {
+    id: 'delhi',
+    name: 'Delhi',
+    state: 'National Capital Territory',
+    district: 'New Delhi',
+    lat: 28.6139,
+    lng: 77.2090,
+    isPopular: true,
+  },
+  {
+    id: 'pune',
+    name: 'Pune',
+    state: 'Maharashtra',
+    district: 'Pune',
+    lat: 18.5204,
+    lng: 73.8567,
+    isPopular: true,
+  },
+  {
+    id: 'bengaluru',
+    name: 'Bengaluru',
+    state: 'Karnataka',
+    district: 'Bengaluru Urban',
+    lat: 12.9716,
+    lng: 77.5946,
+    isPopular: true,
+  },
+  {
+    id: 'manali',
+    name: 'Manali',
+    state: 'Himachal Pradesh',
+    district: 'Kullu',
+    lat: 32.2432,
+    lng: 77.1892,
+    isPopular: true,
+  },
+  {
+    id: 'kolkata',
+    name: 'Kolkata',
+    state: 'West Bengal',
+    district: 'Kolkata',
+    lat: 22.5726,
+    lng: 88.3639,
+  },
+  {
+    id: 'chennai',
+    name: 'Chennai',
+    state: 'Tamil Nadu',
+    district: 'Chennai',
+    lat: 13.0827,
+    lng: 80.2707,
+  },
+  {
+    id: 'hyderabad',
+    name: 'Hyderabad',
+    state: 'Telangana',
+    district: 'Hyderabad',
+    lat: 17.3850,
+    lng: 78.4867,
+  },
+];
+
+export const DEFAULT_LOCATION = POPULAR_LOCATIONS[0];

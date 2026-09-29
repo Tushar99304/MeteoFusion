@@ -1,0 +1,32 @@
+{
+  "app": {
+    "title": "WeatherGPT",
+    "subtitle": "Trusted Weather Intelligence",
+    "tagline": "Conversational meteorological forecasting grounded in official IMD and NDMA evidence"
+  },
+  "nav": {
+    "overview": "Overview",
+    "chat": "WeatherGPT Chat",
+    "forecast": "Forecast",
+    "map": "Live Map",
+    "alerts": "Alerts",
+    "climate": "Climate",
+    "advisory": "Advisory",
+    "voice": "Voice Assistant",
+    "offline": "Offline Center",
+    "settings": "Settings",
+    "sources": "Trusted Sources"
+  },
+  "status": {
+    "live": "Live Weather Connected",
+    "offline": "Offline Mode",
+    "syncing": "Syncing Data...",
+    "demo": "DEMO MODE",
+    "lastSynced": "Last synchronized"
+  },
+  "dashboard": {
+    "greeting": "Good afternoon",
+    "prompt": "How can I help with the weather?",
+    "inputPlaceholder": "Ask anything about the weather (e.g., 'Will it rain today?')"
+  }
+}
