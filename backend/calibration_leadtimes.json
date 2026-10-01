@@ -1,0 +1,123 @@
+{
+  "region": "Mumbai",
+  "location": "Mumbai (19.08°N, 72.88°E)",
+  "latitude": 19.076,
+  "longitude": 72.8777,
+  "variable": "temperature",
+  "evaluation_period": "2026-06-29 to 2026-09-26",
+  "reference_dataset": "ERA5 Reanalysis (Open-Meteo Archive API)",
+  "metric": "MAE",
+  "epsilon": 0.01,
+  "weighting_scheme": "inverse-MAE skill: 1 / (MAE + epsilon)",
+  "calibrated_at": "2026-10-01T14:27:09.581899+00:00",
+  "lead_times": {
+    "24h": {
+      "lead_time": "+24h",
+      "offset_parameter": "previous_day1",
+      "sample_counts": {
+        "ECMWF IFS HRES": 2160,
+        "NCEP GFS": 2160,
+        "DWD ICON Global": 2160,
+        "ECMWF AIFS": 2160
+      },
+      "mae": {
+        "ECMWF IFS HRES": 0.6741,
+        "NCEP GFS": 1.4989,
+        "DWD ICON Global": 0.6679,
+        "ECMWF AIFS": 0.6441
+      },
+      "rmse": {
+        "ECMWF IFS HRES": 0.8827,
+        "NCEP GFS": 1.729,
+        "DWD ICON Global": 0.8431,
+        "ECMWF AIFS": 0.8066
+      },
+      "skill": {
+        "ECMWF IFS HRES": 1.4618,
+        "NCEP GFS": 0.6627,
+        "DWD ICON Global": 1.4752,
+        "ECMWF AIFS": 1.5288
+      },
+      "weights": {
+        "ECMWF IFS HRES": 0.285,
+        "NCEP GFS": 0.1292,
+        "DWD ICON Global": 0.2876,
+        "ECMWF AIFS": 0.2982
+      },
+      "total_eval_samples": 2160,
+      "is_valid": true
+    },
+    "48h": {
+      "lead_time": "+48h",
+      "offset_parameter": "previous_day2",
+      "sample_counts": {
+        "ECMWF IFS HRES": 2160,
+        "NCEP GFS": 2160,
+        "DWD ICON Global": 2160,
+        "ECMWF AIFS": 2160
+      },
+      "mae": {
+        "ECMWF IFS HRES": 0.6756,
+        "NCEP GFS": 1.4789,
+        "DWD ICON Global": 0.7397,
+        "ECMWF AIFS": 0.6516
+      },
+      "rmse": {
+        "ECMWF IFS HRES": 0.9017,
+        "NCEP GFS": 1.7077,
+        "DWD ICON Global": 0.9322,
+        "ECMWF AIFS": 0.8211
+      },
+      "skill": {
+        "ECMWF IFS HRES": 1.4587,
+        "NCEP GFS": 0.6716,
+        "DWD ICON Global": 1.3338,
+        "ECMWF AIFS": 1.5114
+      },
+      "weights": {
+        "ECMWF IFS HRES": 0.2932,
+        "NCEP GFS": 0.135,
+        "DWD ICON Global": 0.2681,
+        "ECMWF AIFS": 0.3037
+      },
+      "total_eval_samples": 2160,
+      "is_valid": true
+    },
+    "72h": {
+      "lead_time": "+72h",
+      "offset_parameter": "previous_day3",
+      "sample_counts": {
+        "ECMWF IFS HRES": 2160,
+        "NCEP GFS": 2160,
+        "DWD ICON Global": 2160,
+        "ECMWF AIFS": 2160
+      },
+      "mae": {
+        "ECMWF IFS HRES": 0.6629,
+        "NCEP GFS": 1.4524,
+        "DWD ICON Global": 0.772,
+        "ECMWF AIFS": 0.6517
+      },
+      "rmse": {
+        "ECMWF IFS HRES": 0.9,
+        "NCEP GFS": 1.6853,
+        "DWD ICON Global": 0.9743,
+        "ECMWF AIFS": 0.8246
+      },
+      "skill": {
+        "ECMWF IFS HRES": 1.4861,
+        "NCEP GFS": 0.6838,
+        "DWD ICON Global": 1.2787,
+        "ECMWF AIFS": 1.5112
+      },
+      "weights": {
+        "ECMWF IFS HRES": 0.2996,
+        "NCEP GFS": 0.1379,
+        "DWD ICON Global": 0.2578,
+        "ECMWF AIFS": 0.3047
+      },
+      "total_eval_samples": 2160,
+      "is_valid": true
+    }
+  }
+}

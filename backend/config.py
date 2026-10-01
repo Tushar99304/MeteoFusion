@@ -171,9 +171,14 @@ RANGES = {
 }
 
 # ---------------------------------------------------------------- Historical Skill Calibration (Phase 1)
-CALIBRATION_FILE_PATH = _s("CALIBRATION_FILE_PATH", str(BASE_DIR / "calibration.json"))
+CALIBRATION_FILE_PATH = _s(
+    "CALIBRATION_FILE_PATH",
+    str(Path(__file__).resolve().parent / "calibration.json"),
+)
+
 CALIBRATION_LEADTIMES_FILE_PATH = _s(
-    "CALIBRATION_LEADTIMES_FILE_PATH", str(BASE_DIR / "calibration_leadtimes.json")
+    "CALIBRATION_LEADTIMES_FILE_PATH",
+    str(Path(__file__).resolve().parent / "calibration_leadtimes.json"),
 )
 CALIBRATION_PREVIOUS_RUNS_URL = _s(
     "CALIBRATION_PREVIOUS_RUNS_URL", "https://previous-runs-api.open-meteo.com/v1/forecast"

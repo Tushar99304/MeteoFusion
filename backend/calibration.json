@@ -1,0 +1,38 @@
+{
+  "calibrated_at": "2026-09-30T13:17:07.957759+00:00",
+  "evaluation_period": "2026-08-26 to 2026-09-24",
+  "lead_time": "+24h",
+  "location": "Mumbai (19.08°N, 72.88°E)",
+  "latitude": 19.076,
+  "longitude": 72.8777,
+  "reference_dataset": "ERA5 Reanalysis (Open-Meteo Archive API)",
+  "metric": "MAE",
+  "sample_counts": {
+    "ECMWF IFS HRES": 720,
+    "NCEP GFS": 720,
+    "DWD ICON Global": 720,
+    "ECMWF AIFS": 720
+  },
+  "mae": {
+    "ECMWF IFS HRES": 0.681,
+    "NCEP GFS": 1.5024,
+    "DWD ICON Global": 0.6515,
+    "ECMWF AIFS": 0.6579
+  },
+  "rmse": {
+    "ECMWF IFS HRES": 0.8402,
+    "NCEP GFS": 1.7131,
+    "DWD ICON Global": 0.8362,
+    "ECMWF AIFS": 0.8379
+  },
+  "weights": {
+    "ECMWF IFS HRES": 0.2828,
+    "NCEP GFS": 0.1292,
+    "DWD ICON Global": 0.2954,
+    "ECMWF AIFS": 0.2926
+  },
+  "epsilon": 0.01,
+  "weighting_scheme": "inverse-MAE skill: 1 / (MAE + epsilon)",
+  "total_eval_samples": 720,
+  "is_valid": true
+}
