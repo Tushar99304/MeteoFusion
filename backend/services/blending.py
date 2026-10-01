@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import os
 from typing import List, Dict, Any, Optional, Tuple
+from backend import config
 from backend.models import (
     ModelForecast,
     BlendedForecastMetadata,
@@ -58,10 +59,23 @@ class ModelBlendingEngine:
         - If calibration is unavailable or outside scope, falls back to uncalibrated baseline.
         - Missing models receive weight 0.0, and remaining models renormalize to sum to exactly 1.0.
         """
-        root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
-        leadtimes_file = os.path.join(root_dir, "calibration_leadtimes.json")
-        calib_90d_file = os.path.join(root_dir, "calibration_90d.json")
-        calib_30d_file = os.path.join(root_dir, "calibration.json")
+        leadtimes_file = config.CALIBRATION_LEADTIMES_FILE_PATH
+        if not os.path.isfile(leadtimes_file):
+            fallback_leadtimes = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "calibration_leadtimes.json"))
+            if os.path.isfile(fallback_leadtimes):
+                leadtimes_file = fallback_leadtimes
+
+        calib_30d_file = config.CALIBRATION_FILE_PATH
+        if not os.path.isfile(calib_30d_file):
+            fallback_30d = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "calibration.json"))
+            if os.path.isfile(fallback_30d):
+                calib_30d_file = fallback_30d
+
+        calib_90d_file = os.path.join(os.path.dirname(leadtimes_file), "calibration_90d.json")
+        if not os.path.isfile(calib_90d_file):
+            fallback_90d = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "calibration_90d.json"))
+            if os.path.isfile(fallback_90d):
+                calib_90d_file = fallback_90d
 
         lead_time_result: Optional[LeadTimeCalibrationResult] = None
         calibration_meta: Optional[CalibrationMetadata] = None

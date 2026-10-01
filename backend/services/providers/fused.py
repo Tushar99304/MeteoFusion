@@ -165,7 +165,13 @@ class FusedWeatherProvider:
             
         region = "Unknown Region"
         if primary_bundle.grid_latitude is not None and primary_bundle.grid_longitude is not None:
-            region = f"{primary_bundle.grid_latitude:.2f}, {primary_bundle.grid_longitude:.2f}"
+            lat = primary_bundle.grid_latitude
+            lon = primary_bundle.grid_longitude
+            # Mumbai calibration anchor is 19.076°N, 72.8777°E (±1.5° tolerance)
+            if abs(lat - 19.076) <= 1.5 and abs(lon - 72.8777) <= 1.5:
+                region = "Mumbai"
+            else:
+                region = f"{lat:.2f}, {lon:.2f}"
             
         blending_metadata = engine.blend(model_inputs, region=region, lead_time_hours=lead_time_hours, target_time=target_time)
 
