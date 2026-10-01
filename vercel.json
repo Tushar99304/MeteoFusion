@@ -6,9 +6,9 @@
       "framework": "vite"
     },
     "backend": {
-      "root": "./",
+      "root": "backend/",
       "framework": "fastapi",
-      "entrypoint": "backend.main:app"
+      "entrypoint": "vercel_main:app"
     }
   },
   "rewrites": [
