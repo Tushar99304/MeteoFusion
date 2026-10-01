@@ -825,10 +825,23 @@ async def get_calibration(
     from backend.models import CalibrationMetadata
     from pathlib import Path
 
-    root_dir = Path(__file__).resolve().parent.parent
-    leadtimes_path = root_dir / "calibration_leadtimes.json"
-    calib_90d_path = root_dir / "calibration_90d.json"
-    calib_30d_path = root_dir / "calibration.json"
+    leadtimes_path = Path(config.CALIBRATION_LEADTIMES_FILE_PATH)
+    if not leadtimes_path.is_file():
+        fallback_leadtimes = Path(__file__).resolve().parent.parent / "calibration_leadtimes.json"
+        if fallback_leadtimes.is_file():
+            leadtimes_path = fallback_leadtimes
+
+    calib_30d_path = Path(config.CALIBRATION_FILE_PATH)
+    if not calib_30d_path.is_file():
+        fallback_30d = Path(__file__).resolve().parent.parent / "calibration.json"
+        if fallback_30d.is_file():
+            calib_30d_path = fallback_30d
+
+    calib_90d_path = leadtimes_path.with_name("calibration_90d.json")
+    if not calib_90d_path.is_file():
+        fallback_90d = Path(__file__).resolve().parent.parent / "calibration_90d.json"
+        if fallback_90d.is_file():
+            calib_90d_path = fallback_90d
 
     # Load multi-lead calibration if available
     lead_time_result = (
@@ -888,7 +901,11 @@ async def get_calibration_leadtimes() -> Dict[str, Any]:
     from backend.services.calibration import HistoricalSkillCalibrator
     from pathlib import Path
 
-    leadtimes_path = Path(__file__).resolve().parent.parent / "calibration_leadtimes.json"
+    leadtimes_path = Path(config.CALIBRATION_LEADTIMES_FILE_PATH)
+    if not leadtimes_path.is_file():
+        fallback_leadtimes = Path(__file__).resolve().parent.parent / "calibration_leadtimes.json"
+        if fallback_leadtimes.is_file():
+            leadtimes_path = fallback_leadtimes
     result = (
         HistoricalSkillCalibrator.load_lead_time_calibration(str(leadtimes_path))
         if leadtimes_path.is_file()
