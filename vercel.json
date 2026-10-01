@@ -6,9 +6,9 @@
       "framework": "vite"
     },
     "backend": {
-      "root": "backend/",
+      "root": "./",
       "framework": "fastapi",
-      "entrypoint": "main:app"
+      "entrypoint": "backend.main:app"
     }
   },
   "rewrites": [
