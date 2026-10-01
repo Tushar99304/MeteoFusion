@@ -1,6 +1,6 @@
 # Phase 3 report — validation, Evidence Quality, deterministic advisory
 
-WeatherGPT · SIH26068 · written 2026-09-01 ~03:20 IST · previous state: Phases 1–2, 53 tests.
+MeteoFusion · SIH26068 · written 2026-09-01 ~03:20 IST · previous state: Phases 1–2, 53 tests.
 
 ---
 

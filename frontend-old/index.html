@@ -1,6 +1,6 @@
 <!doctype html>
 <!--
-  frontend/index.html — WeatherGPT demo surface (single file, no framework, no build step;
+  frontend/index.html — MeteoFusion demo surface (single file, no framework, no build step;
   U1: official NDMA/SACHET alerts are surfaced first, before any model-weather summary).
 
   Plain HTML/CSS/JS, no CDN: served straight from "/" by backend/main.py (which already mounts
@@ -15,7 +15,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>WeatherGPT — grounded weather &amp; SACHET alerts</title>
+    <title>MeteoFusion — grounded weather &amp; SACHET alerts</title>
     <style>
       :root {
         --bg: #0e1420; --panel: #16202f; --panel2: #1b2839; --line: #263548;
@@ -105,7 +105,7 @@
   </head>
   <body>
     <header>
-      <h1>WeatherGPT</h1>
+      <h1>MeteoFusion</h1>
       <span class="tag">grounded weather answers · official NDMA SACHET alerts surfaced first · deterministic risk, verified phrasing</span>
       <span class="pill p-dim" id="health">checking /health …</span>
     </header>
@@ -183,7 +183,7 @@
             ${a.instruction ? `<div class="instr"><b>Official instruction</b> (${esc(a.sender || a.author_name || "issuing authority")}, quoted verbatim from the CAP record): “${esc(a.instruction)}”</div>` : ""}
             <div class="why">${a.expires_at ? "valid until " + time(a.expires_at) : "validity window not published by the source"}${a.alert_id ? " · " + esc(a.alert_id) : ""}${a.raw_source_url ? ` · <a href="${esc(a.raw_source_url)}" target="_blank" rel="noopener">official CAP record ↗</a>` : ""}</div>
           </div>`).join("")}
-          <div class="note" style="margin-top:10px">The text above is an official alert from NDMA SACHET, quoted from the CAP record. It outranks all model-weather interpretation on this page; WeatherGPT adds nothing to it and never replaces it.</div>
+          <div class="note" style="margin-top:10px">The text above is an official alert from NDMA SACHET, quoted from the CAP record. It outranks all model-weather interpretation on this page; MeteoFusion adds nothing to it and never replaces it.</div>
         </div>`;
       }
 
@@ -292,12 +292,12 @@
           </div>`);
         }
 
-        // U1: "what WeatherGPT recommends" belongs next to the answer, not at the very bottom —
+        // U1: "what MeteoFusion recommends" belongs next to the answer, not at the very bottom —
         // still the same deterministic Advisory object (risk decided BEFORE any sentence is
         // written), so this is a render-order change only, not a decision change.
         const adv = ev.advisory;
         if (adv) {
-          out.push(`<div class="card" style="margin-top:12px"><h2>What WeatherGPT recommends · deterministic risk layer (decided from validated evidence, no ML, no LLM)</h2>
+          out.push(`<div class="card" style="margin-top:12px"><h2>What MeteoFusion recommends · deterministic risk layer (decided from validated evidence, no ML, no LLM)</h2>
             <div style="font-size:15.5px">${esc(adv.headline)}</div>
             ${adv.reason ? `<div class="why">${esc(adv.reason)}</div>` : ""}
             ${(adv.factors || []).length ? `<ul>${adv.factors.map((x) => `<li>${esc(x)}</li>`).join("")}</ul>` : ""}

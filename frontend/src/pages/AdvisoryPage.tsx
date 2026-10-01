@@ -8,7 +8,7 @@ import { Compass, Loader2, Info } from 'lucide-react';
 export const AdvisoryPage: React.FC = () => {
   const { selectedActivity, setSelectedActivity, currentLocation, preferences } = useWeatherStore();
   const [advisory, setAdvisory] = useState<WeatherAdvisory | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [isSample, setIsSample] = useState(false);
 
   const categories: { id: ActivityCategory; label: string; icon: string }[] = [
@@ -23,7 +23,6 @@ export const AdvisoryPage: React.FC = () => {
 
   useEffect(() => {
     let cancelled = false;
-    setIsLoading(true);
     const hint = `${currentLocation.name}, ${currentLocation.state}`;
     getAdvisoryForActivity(selectedActivity, hint, preferences.demoMode)
       .then(({ advisory: adv, isSample: sample }) => {
@@ -44,37 +43,44 @@ export const AdvisoryPage: React.FC = () => {
   }, [selectedActivity, currentLocation, preferences.demoMode]);
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-xl sm:text-2xl font-bold text-[#17352A] flex items-center gap-2">
-          <Compass className="w-6 h-6 text-[#2E7D5B]" />
-          Weather Decision Support & Sector Advisory
-        </h1>
-        <p className="text-xs text-[#6B7D74]">
-          Deterministic, evidence-based weather risk from the backend — computed from validated
-          evidence and official alerts, never from an LLM. Official alerts always take precedence.
-        </p>
+    <div className="space-y-8 pb-12">
+      {/* Top Banner */}
+      <div className="card-3d bg-white p-6 sm:p-8 rounded-3xl border border-[#D7E7F5] shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <div className="flex items-center gap-2 mb-1">
+            <span className="p-2 rounded-xl bg-[#DCEEFF] text-[#1557B0]">
+              <Compass className="w-5 h-5 text-[#3B82F6]" />
+            </span>
+            <span className="text-[10px] font-bold text-[#1557B0] uppercase tracking-wider bg-[#EBF5FF] px-2.5 py-0.5 rounded-full border border-[#BFDBFE]">
+              Deterministic Sector Analysis
+            </span>
+          </div>
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-[#0F2742] tracking-tight">
+            Weather Decision Support & Sector Advisory
+          </h1>
+          <p className="text-xs sm:text-sm text-[#5D7188] mt-1 font-medium">
+            Deterministic, rule-verified risk assessment evaluated from validated evidence and official disaster alerts.
+          </p>
+        </div>
       </div>
 
-      <div className="bg-[#F7FBF8] border border-[#DCEAE2] rounded-2xl p-4 text-xs text-[#6B7D74] flex items-start gap-2">
-        <Info className="w-4 h-4 text-[#2E7D5B] shrink-0 mt-0.5" />
-        <span>
-          The activity you choose is passed to the backend advisory engine. It does not change the
-          underlying evidence, thresholds or risk level — it frames the same deterministic estimate
-          for your context. This is weather-related risk guidance, not a safety guarantee or an
-          official order.
+      <div className="p-4 rounded-2xl bg-[#EBF5FF] border border-[#BFDBFE] text-xs text-[#1557B0] flex items-start gap-2.5">
+        <Info className="w-4 h-4 text-[#3B82F6] shrink-0 mt-0.5" />
+        <span className="leading-relaxed">
+          The selected sector frames the deterministic thresholds for your context. It does not alter the underlying weather evidence. Official NDMA SACHET disaster alerts always supersede sector heuristics.
         </span>
       </div>
 
-      <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
+      {/* Sector Category Pills */}
+      <div className="flex gap-2.5 overflow-x-auto pb-2 scrollbar-none">
         {categories.map((cat) => (
           <button
             key={cat.id}
             onClick={() => setSelectedActivity(cat.id)}
-            className={`flex-shrink-0 px-4 py-2 rounded-2xl text-xs font-semibold border transition-all flex items-center gap-2 ${
+            className={`flex-shrink-0 px-4 py-2.5 rounded-2xl text-xs font-bold border transition-all flex items-center gap-2 shadow-2xs ${
               selectedActivity === cat.id
-                ? 'bg-[#2E7D5B] text-white border-[#2E7D5B] shadow-xs'
-                : 'bg-white text-[#17352A] border-[#DCEAE2] hover:bg-[#E8F5EE]'
+                ? 'bg-[#1557B0] text-white border-[#1557B0] shadow-sm'
+                : 'bg-white text-[#0F2742] border-[#D7E7F5] hover:bg-[#F5FAFF]'
             }`}
           >
             <span>{cat.icon}</span>
@@ -84,15 +90,15 @@ export const AdvisoryPage: React.FC = () => {
       </div>
 
       {isLoading ? (
-        <div className="bg-white border border-[#DCEAE2] rounded-2xl p-8 text-center text-sm text-[#6B7D74] flex items-center justify-center gap-2">
-          <Loader2 className="w-4 h-4 animate-spin text-[#2E7D5B]" />
-          Computing the deterministic advisory…
+        <div className="card-3d bg-white border border-[#D7E7F5] rounded-3xl p-16 text-center text-xs text-[#5D7188] flex flex-col items-center justify-center gap-3">
+          <Loader2 className="w-6 h-6 animate-spin text-[#3B82F6]" />
+          <span className="font-bold text-[#0F2742]">Evaluating Deterministic Advisory Rules…</span>
         </div>
       ) : advisory ? (
         <AdvisoryCard advisory={{ ...advisory, location: currentLocation.name }} isSample={isSample} />
       ) : (
-        <div className="bg-white border border-[#DCEAE2] rounded-2xl p-8 text-center text-xs text-[#6B7D74]">
-          No advisory could be produced from verified evidence.
+        <div className="card-3d bg-white border border-[#D7E7F5] rounded-3xl p-12 text-center text-xs text-[#5D7188]">
+          No advisory could be produced from current verified meteorological evidence.
         </div>
       )}
     </div>

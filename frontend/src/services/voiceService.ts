@@ -1,5 +1,5 @@
 /**
- * Voice Assistant Service Abstraction for WeatherGPT
+ * Voice Assistant Service Abstraction for MeteoFusion
  * Supports Web Speech API for STT & TTS with ready contracts for Whisper/On-Device models
  */
 
@@ -93,7 +93,7 @@ export class VoiceService {
     try {
       this.recognition.start();
       this.isListening = true;
-    } catch (e) {
+    } catch {
       handlers.onError('Could not start microphone');
     }
   }

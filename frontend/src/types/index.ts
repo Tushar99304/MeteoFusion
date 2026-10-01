@@ -94,6 +94,7 @@ export interface WeatherEvidence {
   retrievedAtUtc?: string;
   requestUrl?: string;
   isSample?: boolean;
+  blendingMetadata?: BlendedForecastMetadata;
 }
 
 export interface HourlyForecast {
@@ -231,6 +232,7 @@ export type ApiStatus = 'REAL' | 'DEGRADED' | 'DEMO' | 'OFFLINE';
 
 export interface ConnectionState {
   isOnline: boolean;
+  backendReachable: boolean;
   apiStatus: ApiStatus;
   lastSyncedAt: string | null;
   syncInProgress: boolean;
@@ -248,6 +250,62 @@ export interface UserPreferences {
   smsAlertsEnabled: boolean;
   pushNotifications: boolean;
   autoDetectLocation: boolean;
+}
+
+export interface CalibrationMetadata {
+  calibratedAt: string;
+  evaluationPeriod: string;
+  leadTime: string;
+  location?: string;
+  latitude?: number;
+  longitude?: number;
+  referenceDataset: string;
+  metric: string;
+  sampleCounts: Record<string, number>;
+  mae: Record<string, number>;
+  rmse?: Record<string, number>;
+  weights: Record<string, number>;
+  epsilon: number;
+  weightingScheme?: string;
+  totalEvalSamples?: number;
+  isValid?: boolean;
+}
+
+export interface AdaptiveWeightAudit {
+  baseWeights: Record<string, number>;
+  finalWeights: Record<string, number>;
+  leadTime: number;
+  region: string;
+  weatherRegime: string;
+  variable: string;
+  calibrationStatus: string;
+  calibratedDimensions: string[];
+  fallbackDimensions: string[];
+  adjustments: Record<string, number>;
+  explanation: string;
+}
+
+export interface BlendedForecastMetadata {
+  region: string;
+  season: string;
+  weatherRegime: string;
+  leadTimeHours: number;
+  targetTime?: string;  // ISO local timestamp the blend corresponds to e.g. "2026-10-01T17:00"
+  models: {
+    modelName: string;
+    weight: number;
+    modelType?: string;  // "NWP" | "AI/ML" — passed through from the backend registry
+    temperatureC?: number | null;
+    precipitationMm?: number | null;
+    windSpeedKmh?: number | null;
+  }[];
+  extremeWeatherIndicators: string[];
+  blendedTemperatureC?: number | null;
+  blendedPrecipitationMm?: number | null;
+  blendedWindSpeedKmh?: number | null;
+  calibrationMode?: 'CALIBRATED' | 'FALLBACK';
+  calibrationMetadata?: CalibrationMetadata;
+  adaptiveAudit?: AdaptiveWeightAudit;
 }
 
 /** The mapped result of one /api/query call, kept in the store for pages to reuse. */
@@ -270,6 +328,7 @@ export interface QueryResultView {
   answer?: BackendAnswer;
   raw?: BackendEvidence;
   location?: { name: string; lat: number; lng: number; admin1?: string };
+  blendingMetadata?: BlendedForecastMetadata;
 }
 
 export type { BackendAdvisory, BackendAlert, BackendAnswer, BackendEvidence };

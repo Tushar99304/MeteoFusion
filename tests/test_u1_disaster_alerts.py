@@ -545,7 +545,7 @@ def test_27_frontend_contains_the_u1_alert_presentation():
         "official NDMA / SACHET alert active",
         "Official instruction",
         "quoted verbatim from the CAP record",
-        "What WeatherGPT recommends",
+        "What MeteoFusion recommends",
         'a.validity === "active"',                  # banner shows backend-decided validity only
     ):
         assert needle in html, needle

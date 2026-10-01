@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import type {
   ActivityCategory,
+  CalibrationMetadata,
   ChatMessage,
   ConnectionState,
   DailyForecast,
@@ -17,7 +18,8 @@ import { getCurrentWeather } from '../services/weatherService';
 import { getForecast } from '../services/forecastService';
 import { getActiveAlerts } from '../services/alertService';
 import { getAdvisoryForActivity } from '../services/advisoryService';
-import { fetchHealth, getSessionId, newSessionId } from '../services/backendClient';
+import { fetchHealth, fetchCalibration, getSessionId, newSessionId, BackendError } from '../services/backendClient';
+import { mapCalibrationMetadata } from '../services/mappers';
 import { getCachedData, setCachedData } from '../utils/cache';
 
 /**
@@ -50,6 +52,8 @@ interface WeatherStoreState {
   alerts: WeatherAlert[];
   expiredAlerts: WeatherAlert[];
   advisory: WeatherAdvisory | null;
+  calibration: CalibrationMetadata | null;
+  fetchActiveCalibration: () => Promise<void>;
   isLoading: boolean;
   error: string | null;
   usingSample: boolean;
@@ -81,6 +85,9 @@ interface WeatherStoreState {
   setActiveEvidenceDrawer: (evidence: WeatherEvidence | null) => void;
   activeAlertModal: WeatherAlert | null;
   setActiveAlertModal: (alert: WeatherAlert | null) => void;
+
+  isMobileSidePanelOpen: boolean;
+  setMobileSidePanelOpen: (open: boolean) => void;
 }
 
 function nowLabel(): string {
@@ -97,6 +104,7 @@ export const useWeatherStore = create<WeatherStoreState>((set, get) => ({
   alerts: [],
   expiredAlerts: [],
   advisory: null,
+  calibration: null,
   isLoading: false,
   error: null,
   usingSample: false,
@@ -105,7 +113,8 @@ export const useWeatherStore = create<WeatherStoreState>((set, get) => ({
 
   connection: {
     isOnline: typeof navigator !== 'undefined' ? navigator.onLine : true,
-    apiStatus: 'DEGRADED',
+    backendReachable: true,
+    apiStatus: 'REAL',
     lastSyncedAt: null,
     syncInProgress: false,
     activeSource: '—',
@@ -129,6 +138,8 @@ export const useWeatherStore = create<WeatherStoreState>((set, get) => ({
   selectedActivity: 'Driving',
   activeEvidenceDrawer: null,
   activeAlertModal: null,
+  isMobileSidePanelOpen: false,
+  setMobileSidePanelOpen: (open) => set({ isMobileSidePanelOpen: open }),
 
   setLocation: (location) => {
     set({ currentLocation: location });
@@ -155,6 +166,7 @@ export const useWeatherStore = create<WeatherStoreState>((set, get) => ({
       connection: {
         ...connection,
         isOnline,
+        backendReachable: isOnline ? connection.backendReachable : false,
         apiStatus: isOnline ? connection.apiStatus : 'OFFLINE',
         activeSource: isOnline ? connection.activeSource : 'CACHED',
       },
@@ -168,6 +180,8 @@ export const useWeatherStore = create<WeatherStoreState>((set, get) => ({
       set((s) => ({
         connection: {
           ...s.connection,
+          backendReachable: true,
+          isOnline: true,
           apiStatus: s.preferences.demoMode ? 'DEMO' : 'REAL',
           llmConfigured: health.llm?.configured,
           alertsEnabled: health.alerts?.enabled,
@@ -178,9 +192,24 @@ export const useWeatherStore = create<WeatherStoreState>((set, get) => ({
       set((s) => ({
         connection: {
           ...s.connection,
+          backendReachable: false,
           apiStatus: s.connection.isOnline ? 'DEGRADED' : 'OFFLINE',
         },
       }));
+    }
+  },
+
+  fetchActiveCalibration: async () => {
+    try {
+      const res = await fetchCalibration();
+      if (res.ok && res.metadata) {
+        const mapped = mapCalibrationMetadata(res.metadata);
+        if (mapped) {
+          set({ calibration: mapped });
+        }
+      }
+    } catch {
+      // Backend may be offline or in fallback mode
     }
   },
 
@@ -198,34 +227,63 @@ export const useWeatherStore = create<WeatherStoreState>((set, get) => ({
     const demo = preferences.demoMode;
 
     try {
+      void get().fetchActiveCalibration();
       const [weather, forecast, alerts] = await Promise.all([
         getCurrentWeather(currentLocation.id, demo, hint),
         getForecast(currentLocation.id, demo, hint),
         getActiveAlerts(currentLocation.id, demo, hint),
       ]);
 
-      set({
-        currentWeather: weather.evidence ?? null,
-        hourlyForecast: forecast.hourly,
-        dailyForecast: forecast.daily,
-        alerts: alerts.active,
-        expiredAlerts: alerts.expired,
-        isLoading: false,
-        usingSample: weather.isSample,
-        usingCached: false,
-        lastQueriedAt: nowLabel(),
-        error: null,
-        connection: {
-          ...get().connection,
-          syncInProgress: false,
-          isOnline: true,
-          apiStatus: demo ? 'DEMO' : 'REAL',
-          lastSyncedAt: nowLabel(),
-          activeSource: weather.isSample ? 'SAMPLE DATA' : weather.evidence?.source || 'backend',
-        },
-      });
+      if (demo || weather.isSample) {
+        const updateTime = nowLabel();
+        set({
+          currentWeather: weather.evidence ?? null,
+          hourlyForecast: forecast.hourly,
+          dailyForecast: forecast.daily,
+          alerts: alerts.active,
+          expiredAlerts: alerts.expired,
+          isLoading: false,
+          usingSample: true,
+          usingCached: false,
+          lastQueriedAt: updateTime,
+          error: null,
+          connection: {
+            ...get().connection,
+            backendReachable: true,
+            syncInProgress: false,
+            apiStatus: 'DEMO',
+            lastSyncedAt: updateTime,
+            activeSource: 'SAMPLE DATA',
+          },
+        });
+        return;
+      }
 
-      if (!weather.isSample) {
+      // Check if weather provider successfully returned fresh evidence
+      if (weather.evidence) {
+        const updateTime = nowLabel();
+        set({
+          currentWeather: weather.evidence,
+          hourlyForecast: forecast.hourly,
+          dailyForecast: forecast.daily,
+          alerts: alerts.active,
+          expiredAlerts: alerts.expired,
+          isLoading: false,
+          usingSample: false,
+          usingCached: false,
+          lastQueriedAt: updateTime,
+          error: null,
+          connection: {
+            ...get().connection,
+            backendReachable: true,
+            syncInProgress: false,
+            isOnline: true,
+            apiStatus: 'REAL',
+            lastSyncedAt: updateTime,
+            activeSource: weather.evidence.source || 'backend',
+          },
+        });
+
         const snapshot: CachedSnapshot = {
           evidence: weather.evidence,
           hourly: forecast.hourly,
@@ -235,13 +293,67 @@ export const useWeatherStore = create<WeatherStoreState>((set, get) => ({
           at: new Date().toISOString(),
         };
         setCachedData(CACHE_KEY, snapshot);
+      } else {
+        // Backend was reached, but weather provider failed/abstained (no weather evidence returned).
+        // Fall back to cached weather snapshot without marking backend offline!
+        const cached = getCachedData<CachedSnapshot>(CACHE_KEY);
+        if (cached?.data?.evidence) {
+          const snap = cached.data;
+          const cachedTime = snap.at
+            ? new Date(snap.at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+            : (get().connection.lastSyncedAt || nowLabel());
+          set({
+            currentWeather: {
+              warningsCount: 0,
+              ...snap.evidence,
+              source: 'CACHED',
+              authority: 'research_repro',
+              sourcePriority: 'CACHED_LOCAL',
+              location: snap.evidence?.location ?? snap.location.name,
+            },
+            hourlyForecast: snap.hourly,
+            dailyForecast: snap.daily,
+            alerts: snap.alerts,
+            isLoading: false,
+            usingCached: true,
+            usingSample: false,
+            error: null,
+            connection: {
+              ...get().connection,
+              backendReachable: true,
+              syncInProgress: false,
+              apiStatus: 'REAL',
+              activeSource: 'CACHED',
+              lastSyncedAt: cachedTime,
+            },
+          });
+        } else {
+          set({
+            currentWeather: null,
+            isLoading: false,
+            usingCached: false,
+            error: 'Weather provider is currently unavailable and no cached evidence is available.',
+            connection: {
+              ...get().connection,
+              backendReachable: true,
+              syncInProgress: false,
+              apiStatus: 'DEGRADED',
+              activeSource: '—',
+            },
+          });
+        }
       }
     } catch (err) {
-      // Live fetch failed: fall back to the last good CACHED real evidence (clearly labelled),
-      // never to fresh fabricated numbers.
+      // Live fetch failed (e.g. backend unreachable, network drop, or server error)
+      const isNetworkError =
+        (err instanceof BackendError && err.kind === 'network') ||
+        (err instanceof Error && err.message.toLowerCase().includes('failed to fetch'));
       const cached = getCachedData<CachedSnapshot>(CACHE_KEY);
       if (cached?.data?.evidence) {
         const snap = cached.data;
+        const cachedTime = snap.at
+          ? new Date(snap.at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+          : (get().connection.lastSyncedAt || nowLabel());
         set({
           currentWeather: {
             warningsCount: 0,
@@ -260,25 +372,27 @@ export const useWeatherStore = create<WeatherStoreState>((set, get) => ({
           error: null,
           connection: {
             ...get().connection,
+            backendReachable: !isNetworkError,
             syncInProgress: false,
-            apiStatus: 'OFFLINE',
+            apiStatus: isNetworkError ? 'OFFLINE' : 'DEGRADED',
             activeSource: 'CACHED',
-            lastSyncedAt: snap.at
-              ? new Date(snap.at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-              : get().connection.lastSyncedAt,
+            lastSyncedAt: cachedTime,
           },
         });
       } else {
         set({
+          currentWeather: null,
           isLoading: false,
+          usingCached: false,
           error:
             err instanceof Error
               ? err.message
-              : 'Could not reach the WeatherGPT backend and no cached evidence is available.',
+              : 'Could not reach the MeteoFusion backend and no cached evidence is available.',
           connection: {
             ...get().connection,
+            backendReachable: !isNetworkError,
             syncInProgress: false,
-            apiStatus: 'DEGRADED',
+            apiStatus: isNetworkError ? 'OFFLINE' : 'DEGRADED',
             activeSource: '—',
           },
         });
@@ -293,7 +407,7 @@ export const useWeatherStore = create<WeatherStoreState>((set, get) => ({
         preferences: { ...s.preferences, demoMode: nextDemo },
         connection: {
           ...s.connection,
-          apiStatus: nextDemo ? 'DEMO' : s.connection.isOnline ? 'REAL' : 'OFFLINE',
+          apiStatus: nextDemo ? 'DEMO' : s.connection.backendReachable ? 'REAL' : 'OFFLINE',
           activeSource: nextDemo ? 'SAMPLE DATA' : s.connection.activeSource,
         },
       };

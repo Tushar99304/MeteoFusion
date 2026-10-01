@@ -57,7 +57,7 @@ from backend.services.http_client import UpstreamError
 APP_VERSION = "0.5.0-u1"  # P1 retrieval · P2 SACHET alerts · P3 validation+quality+advisory · P4 grounded LLM · P5A provider registry · U1 disaster scenarios + official alert UX
 
 app = FastAPI(
-    title="WeatherGPT MVP",
+    title="MeteoFusion MVP",
     description="Grounded conversational weather intelligence layer — retrieval, validation and abstention; the LLM never becomes the source of meteorological truth.",
     version=APP_VERSION,
 )
@@ -88,7 +88,7 @@ async def index():
     if target.is_file():
         return FileResponse(str(target))
     return {
-        "service": f"WeatherGPT MVP ({APP_VERSION}) - grounded weather intelligence API",
+        "service": f"MeteoFusion MVP ({APP_VERSION}) - grounded weather intelligence API",
         "frontend": "not built yet — run `npm install && npm run build` in frontend/ (or `npm run dev` and use the Vite proxy)",
         "read_this_first": "GET /api/pipeline?message=What is the weather in Nagpur right now?",
         "endpoints": {
@@ -813,6 +813,91 @@ async def direct_weather(
     except UpstreamError as exc:
         return {"ok": False, "error": f"{exc.service}: {exc.detail}"}
     return {"ok": True, "weather": bundle.model_dump()}
+
+
+@app.get("/api/calibration")
+async def get_calibration(
+    window: Optional[str] = None,
+    lead_time: Optional[str] = None,
+) -> Dict[str, Any]:
+    """Returns active historical skill calibration metadata and weights."""
+    from backend.services.calibration import HistoricalSkillCalibrator, normalize_lead_time_key
+    from backend.models import CalibrationMetadata
+    from pathlib import Path
+
+    root_dir = Path(__file__).resolve().parent.parent
+    leadtimes_path = root_dir / "calibration_leadtimes.json"
+    calib_90d_path = root_dir / "calibration_90d.json"
+    calib_30d_path = root_dir / "calibration.json"
+
+    # Load multi-lead calibration if available
+    lead_time_result = (
+        HistoricalSkillCalibrator.load_lead_time_calibration(str(leadtimes_path))
+        if leadtimes_path.is_file()
+        else None
+    )
+
+    # Determine requested lead time key (default "24h")
+    requested_lt = normalize_lead_time_key(lead_time) if lead_time else "24h"
+
+    if window == "30d":
+        primary = HistoricalSkillCalibrator.load_calibration(str(calib_30d_path))
+    elif lead_time_result and requested_lt in lead_time_result.lead_times:
+        profile = lead_time_result.lead_times[requested_lt]
+        primary = CalibrationMetadata(
+            calibrated_at=lead_time_result.calibrated_at,
+            evaluation_period=lead_time_result.evaluation_period,
+            lead_time=profile.lead_time,
+            location=lead_time_result.location,
+            latitude=lead_time_result.latitude,
+            longitude=lead_time_result.longitude,
+            reference_dataset=lead_time_result.reference_dataset,
+            metric=lead_time_result.metric,
+            sample_counts=profile.sample_counts,
+            mae=profile.mae,
+            rmse=profile.rmse,
+            weights=profile.weights,
+            epsilon=lead_time_result.epsilon,
+            weighting_scheme=lead_time_result.weighting_scheme,
+            total_eval_samples=profile.total_eval_samples or 2160,
+            is_valid=profile.is_valid,
+        )
+    elif calib_90d_path.is_file():
+        primary = HistoricalSkillCalibrator.load_calibration(str(calib_90d_path))
+    else:
+        primary = HistoricalSkillCalibrator.load_calibration(str(calib_30d_path))
+
+    if primary is None:
+        return {"ok": False, "status": "uncalibrated", "message": "Historical skill calibration pending."}
+
+    resp: Dict[str, Any] = {
+        "ok": True,
+        "status": "calibrated",
+        "metadata": primary.model_dump(),
+        "calibration_source": "90-day historical skill calibration" if primary.total_eval_samples == 2160 else "30-day historical skill calibration",
+        "selected_lead_time": primary.lead_time,
+    }
+    if lead_time_result:
+        resp["lead_times"] = lead_time_result.model_dump()
+    return resp
+
+
+@app.get("/api/calibration/leadtimes")
+async def get_calibration_leadtimes() -> Dict[str, Any]:
+    """Returns complete multi-lead-time (+24h, +48h, +72h) calibration profiles."""
+    from backend.services.calibration import HistoricalSkillCalibrator
+    from pathlib import Path
+
+    leadtimes_path = Path(__file__).resolve().parent.parent / "calibration_leadtimes.json"
+    result = (
+        HistoricalSkillCalibrator.load_lead_time_calibration(str(leadtimes_path))
+        if leadtimes_path.is_file()
+        else None
+    )
+    if result is None:
+        return {"ok": False, "status": "uncalibrated", "message": "Lead-time calibration pending."}
+    return {"ok": True, "status": "calibrated", "lead_times": result.model_dump()}
+
 
 
 # --------------------------------------------------------------------------- #

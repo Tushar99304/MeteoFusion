@@ -1,10 +1,11 @@
 import React from 'react';
 import { useWeatherStore } from '../../store/useWeatherStore';
-import { FlaskConical, Radio } from 'lucide-react';
+import { FlaskConical } from 'lucide-react';
 
 /**
- * Toggles between LIVE (real backend) and explicit SAMPLE demo data. Live is the default;
- * sample content is always visibly badged so it is never mistaken for a real/official feed.
+ * Toggles between LIVE mode (real backend and NWP models) and explicit SAMPLE demo data.
+ * When demo mode is off, displays a neutral Demo Mode toggle button so it never clashes
+ * with the live weather freshness badges or falsely claims to be a feed.
  */
 export const DemoModeBadge: React.FC = () => {
   const { preferences, toggleDemoMode } = useWeatherStore();
@@ -13,19 +14,19 @@ export const DemoModeBadge: React.FC = () => {
   return (
     <button
       onClick={toggleDemoMode}
-      className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold border transition-all ${
+      className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border transition-all shadow-xs ${
         demo
-          ? 'bg-amber-100 text-amber-900 border-amber-300 shadow-xs'
-          : 'bg-[#E8F5EE] text-[#2E7D5B] border-[#6BAF92]/40 hover:bg-[#2E7D5B] hover:text-white'
+          ? 'bg-amber-100 text-amber-900 border-amber-300 hover:bg-amber-200'
+          : 'bg-[#F5FAFF] text-[#5D7188] border-[#D7E7F5] hover:bg-[#DCEEFF] hover:text-[#1557B0]'
       }`}
       title={
         demo
-          ? 'Showing bundled SAMPLE demo data — click to use the live WeatherGPT backend'
-          : 'Live backend evidence — click to switch to labelled sample demo data'
+          ? 'Showing bundled SAMPLE demo data — click to return to live MeteoFusion backend'
+          : 'Click to test with bundled sample demo data'
       }
     >
-      {demo ? <FlaskConical className="w-3.5 h-3.5 text-amber-600" /> : <Radio className="w-3.5 h-3.5" />}
-      <span>{demo ? 'SAMPLE DATA' : 'LIVE BACKEND'}</span>
+      <FlaskConical className={`w-3.5 h-3.5 ${demo ? 'text-amber-700' : 'text-[#5D7188]'}`} />
+      <span>{demo ? 'DEMO DATA ACTIVE' : 'DEMO MODE'}</span>
     </button>
   );
 };

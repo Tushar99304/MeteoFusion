@@ -1,6 +1,6 @@
 /*
  * scripts/check_frontend_render.mjs — offline render test for the REFERENCE single-file page
- * frontend-old/index.html (the previous WeatherGPT UI, kept as fallback).
+ * frontend-old/index.html (the previous MeteoFusion UI, kept as fallback).
  *
  * The production UI is the React/Vite app in frontend/; it has its own quality gate:
  *   node scripts/check_frontend.mjs   (tsc + vite build + oxlint + mapper unit tests)
@@ -247,7 +247,7 @@ const EXPECT = {
                  /Official instruction/,                                    // labelled as the authority's words
                  /quoted verbatim from the CAP record/,                     // provenance of the quote
                  /outranks all model-weather interpretation/,               // precedence is stated
-                 /What WeatherGPT recommends/,                              // recommendation beside the answer
+                 /What MeteoFusion recommends/,                              // recommendation beside the answer
                  /official instruction, quoted from IMD Mumbai/],            // advisory factor quote
   u1_expired_not_active: [/SACHET was checked/, /shown for transparency only/, /IN-OLD/,
                  // the expired instruction may only appear AFTER the transparency label

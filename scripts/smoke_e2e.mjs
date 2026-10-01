@@ -91,8 +91,12 @@ print(json.dumps(out, indent=2, default=str))
 
 fs.writeFileSync(path.join(ROOT, '.smoke_harness.py'), harness);
 try {
+  const pythonBin = process.platform === 'win32'
+    ? (fs.existsSync(path.join(ROOT, '.venv', 'Scripts', 'python.exe')) ? path.join(ROOT, '.venv', 'Scripts', 'python.exe') : 'python')
+    : (fs.existsSync(path.join(ROOT, '.venv', 'bin', 'python')) ? path.join(ROOT, '.venv', 'bin', 'python') : 'python3');
+
   const res = spawnSync(
-    path.join(ROOT, '.venv', 'bin', 'python'),
+    pythonBin,
     ['-c', harness.replace(/^/gm, '')],
     { cwd: ROOT, encoding: 'utf8' },
   );

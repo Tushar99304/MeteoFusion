@@ -81,7 +81,67 @@ export interface BackendWeatherBundle {
   past_days?: BackendForecastDay[];
   hourly?: BackendHourlyPoint[];
   request_url?: string;
+  blending_metadata?: BackendBlendedForecastMetadata | null;
 }
+
+export interface BackendModelForecast {
+  model_name: string;
+  weight: number;
+  model_type?: string | null;  // "NWP" | "AI/ML" — honest label from the registry
+  temperature_c?: number | null;
+  precipitation_mm?: number | null;
+  wind_speed_kmh?: number | null;
+}
+
+export interface BackendCalibrationMetadata {
+  calibrated_at: string;
+  evaluation_period: string;
+  lead_time: string;
+  location?: string;
+  latitude?: number;
+  longitude?: number;
+  reference_dataset: string;
+  metric: string;
+  sample_counts: Record<string, number>;
+  mae: Record<string, number>;
+  rmse?: Record<string, number>;
+  weights: Record<string, number>;
+  epsilon: number;
+  weighting_scheme?: string;
+  total_eval_samples?: number;
+  is_valid?: boolean;
+}
+
+export interface BackendAdaptiveWeightAudit {
+  base_weights: Record<string, number>;
+  final_weights: Record<string, number>;
+  lead_time: number;
+  region: string;
+  weather_regime: string;
+  variable: string;
+  calibration_status: string;
+  calibrated_dimensions: string[];
+  fallback_dimensions: string[];
+  adjustments: Record<string, number>;
+  explanation: string;
+}
+
+export interface BackendBlendedForecastMetadata {
+  region: string;
+  season: string;
+  weather_regime: string;
+  lead_time_hours: number;
+  target_time?: string | null;  // ISO local timestamp the blend corresponds to
+  models: BackendModelForecast[];
+  extreme_weather_indicators: string[];
+  blended_temperature_c?: number | null;
+  blended_precipitation_mm?: number | null;
+  blended_wind_speed_kmh?: number | null;
+  calibration_mode?: 'CALIBRATED' | 'FALLBACK';
+  calibration_metadata?: BackendCalibrationMetadata | null;
+  adaptive_audit?: BackendAdaptiveWeightAudit | null;
+}
+
 
 export type BackendAlertValidity = 'active' | 'expired' | 'unknown';
 

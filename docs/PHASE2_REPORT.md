@@ -1,6 +1,6 @@
 # Phase 2 report — NDMA SACHET official alert retrieval
 
-WeatherGPT · SIH26068 · written 2026-08-31 20:44 UTC · branch state: Phases 1–2 complete, 53 tests passing.
+MeteoFusion · SIH26068 · written 2026-08-31 20:44 UTC · branch state: Phases 1–2 complete, 53 tests passing.
 
 ---
 

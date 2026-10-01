@@ -172,3 +172,45 @@ export function fetchClimate(place: string): Promise<BackendClimateResponse> {
     `/api/climate?place=${encodeURIComponent(place)}`,
   );
 }
+
+/** GET /api/calibration — active historical skill calibration metadata and weights. */
+export function fetchCalibration(): Promise<{
+  ok: boolean;
+  status: string;
+  metadata?: import('../types/backend').BackendCalibrationMetadata;
+  message?: string;
+}> {
+  return request<{
+    ok: boolean;
+    status: string;
+    metadata?: import('../types/backend').BackendCalibrationMetadata;
+    message?: string;
+  }>('/api/calibration');
+}
+
+/** GET /api/weather?latitude=...&longitude=... — direct multi-source weather for pinpoint coordinates. */
+export function fetchDirectWeather(
+  latitude: number,
+  longitude: number,
+  timeframe = 'now',
+): Promise<{
+  ok: boolean;
+  weather?: import('../types/backend').BackendWeatherBundle;
+  error?: string;
+}> {
+  return request(`/api/weather?latitude=${latitude}&longitude=${longitude}&timeframe=${timeframe}`);
+}
+
+/** GET /api/alerts?place=...&context=... — NDMA SACHET alert check for a place/state. */
+export function fetchAlertsForPlace(
+  place: string,
+  context?: string,
+): Promise<{
+  ok: boolean;
+  alerts: import('../types/backend').BackendAlertsEvidence;
+  relevant_headlines: string[];
+}> {
+  const query = new URLSearchParams({ place });
+  if (context) query.set('context', context);
+  return request(`/api/alerts?${query.toString()}`);
+}

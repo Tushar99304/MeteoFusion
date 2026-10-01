@@ -3,7 +3,7 @@ import { RainfallTrendChart } from '../components/climate/RainfallTrendChart';
 import { TemperatureTrendChart } from '../components/climate/TemperatureTrendChart';
 import { getClimate } from '../services/climateService';
 import type { ClimateResult } from '../types';
-import { LineChart, BarChart3, Loader2, CloudOff, FlaskConical, Info } from 'lucide-react';
+import { LineChart, Loader2, CloudOff, FlaskConical, Info, Thermometer, Droplets } from 'lucide-react';
 import { useWeatherStore } from '../store/useWeatherStore';
 
 export const ClimatePage: React.FC = () => {
@@ -15,12 +15,14 @@ export const ClimatePage: React.FC = () => {
 
   useEffect(() => {
     let cancelled = false;
-    setLoading(true);
     getClimate(currentLocation.name, preferences.demoMode)
       .then(({ result, isSample: sample }) => {
         if (cancelled) return;
         setData(result);
         setIsSample(sample);
+      })
+      .catch(() => {
+        if (!cancelled) setData(null);
       })
       .finally(() => {
         if (!cancelled) setLoading(false);
@@ -34,75 +36,88 @@ export const ClimatePage: React.FC = () => {
   const hasTemp = points.some((p) => p.tempAvg != null);
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+    <div className="space-y-8 pb-12">
+      {/* Top Banner */}
+      <div className="card-3d bg-white p-6 sm:p-8 rounded-3xl border border-[#D7E7F5] shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-[#17352A] flex items-center gap-2">
-            <LineChart className="w-6 h-6 text-[#2E7D5B]" />
-            Long-term Climate Trends — {data?.location || currentLocation.name}
+          <div className="flex items-center gap-2 mb-1">
+            <span className="p-2 rounded-xl bg-[#DCEEFF] text-[#1557B0]">
+              <LineChart className="w-5 h-5 text-[#3B82F6]" />
+            </span>
+            <span className="text-[10px] font-bold text-[#1557B0] uppercase tracking-wider bg-[#EBF5FF] px-2.5 py-0.5 rounded-full border border-[#BFDBFE]">
+              Historical Reanalysis Archive
+            </span>
+          </div>
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-[#0F2742] tracking-tight">
+            Climate Dynamics & Multi-Year Trends
           </h1>
-          <p className="text-xs text-[#6B7D74]">
-            Historical rainfall and temperature trends aggregated from the Open-Meteo reanalysis
-            archive
+          <p className="text-xs sm:text-sm text-[#5D7188] mt-1 font-medium">
+            Aggregated archive data for {data?.location || currentLocation.name}. Research & reproducibility benchmark.
           </p>
         </div>
 
-        <span
-          className={`px-3 py-1.5 rounded-xl text-xs font-semibold self-start sm:self-auto border ${
-            isSample
-              ? 'bg-amber-50 border-amber-200 text-amber-900'
-              : 'bg-blue-50 border-blue-200 text-blue-800'
-          } flex items-center gap-1.5`}
-        >
-          {isSample ? <FlaskConical className="w-3.5 h-3.5" /> : <Info className="w-3.5 h-3.5" />}
-          {isSample ? 'SAMPLE DEMO DATA' : 'Research / repro archive (not IMD)'}
-        </span>
+        <div className="flex items-center gap-2 self-start md:self-auto">
+          <span
+            className={`px-3.5 py-2 rounded-2xl text-xs font-bold border ${
+              isSample
+                ? 'bg-amber-50 border-amber-300 text-amber-900'
+                : 'bg-blue-50 border-blue-200 text-[#1557B0]'
+            } flex items-center gap-1.5 shadow-2xs`}
+          >
+            {isSample ? <FlaskConical className="w-3.5 h-3.5" /> : <Info className="w-3.5 h-3.5" />}
+            <span>{isSample ? 'SAMPLE DEMO DATA' : 'Research / Reproducibility Archive'}</span>
+          </span>
+        </div>
       </div>
 
-      <div className="bg-blue-50 border border-blue-200 rounded-2xl p-4 text-xs text-blue-900 leading-relaxed">
-        <strong>Source honesty:</strong> trends are aggregated from Open-Meteo’s ERA5-style
-        reanalysis archive for <strong>research and reproducibility</strong>. They are{' '}
-        <strong>not official India Meteorological Department (IMD) climate normals</strong> and no
-        IMD claim is made. The “norm” line is this archive window’s own mean, not an official
-        baseline. {data?.period ? `Shown period: ${data.period}.` : ''}
+      {/* Attribution Disclosure */}
+      <div className="p-4 rounded-2xl bg-[#EBF5FF] border border-[#BFDBFE] text-xs text-[#1557B0] leading-relaxed flex items-start gap-3">
+        <Info className="w-5 h-5 text-[#3B82F6] shrink-0 mt-0.5" />
+        <p>
+          <strong>Scientific Attribution:</strong> Multi-year climate trends are aggregated from Open-Meteo's historical reanalysis archive for <strong>research and benchmark reproducibility</strong>. They are <strong>not official India Meteorological Department (IMD) climate normals</strong> and are never claimed as IMD baseline data. {data?.period ? `Period analyzed: ${data.period}.` : ''}
+        </p>
       </div>
 
       {loading ? (
-        <div className="bg-white border border-[#DCEAE2] rounded-2xl p-12 text-center text-sm text-[#6B7D74] flex items-center justify-center gap-2">
-          <Loader2 className="w-5 h-5 animate-spin text-[#2E7D5B]" /> Loading historical archive…
+        <div className="card-3d bg-white border border-[#D7E7F5] rounded-3xl p-16 text-center text-xs text-[#5D7188] flex flex-col items-center justify-center gap-3">
+          <Loader2 className="w-6 h-6 animate-spin text-[#3B82F6]" />
+          <span className="font-bold text-[#0F2742]">Synthesizing Historical Climate Archive…</span>
         </div>
       ) : !data?.available ? (
-        <div className="bg-white border border-[#DCEAE2] rounded-2xl p-10 text-center space-y-2">
-          <CloudOff className="w-9 h-9 text-amber-600 mx-auto" />
-          <p className="font-bold text-sm text-[#17352A]">Climate archive unavailable</p>
-          <p className="text-xs text-[#6B7D74] max-w-md mx-auto">
+        <div className="card-3d bg-white border border-[#D7E7F5] rounded-3xl p-12 text-center space-y-3">
+          <CloudOff className="w-10 h-10 text-amber-500 mx-auto" />
+          <h3 className="font-extrabold text-base text-[#0F2742]">Climate Archive Unavailable for Selected Coordinates</h3>
+          <p className="text-xs text-[#5D7188] max-w-md mx-auto leading-relaxed">
             {data?.note ||
-              'The research climate archive could not be consulted for this location. No trend is shown rather than fabricated.'}
+              'The historical climate archive could not be verified for this station. Data is withheld rather than simulated.'}
           </p>
         </div>
       ) : (
-        <>
-          <div className="flex items-center gap-2 border-b border-[#DCEAE2] pb-3">
+        <div className="space-y-6">
+          {/* Tab Selector */}
+          <div className="flex items-center gap-2 border-b border-[#D7E7F5] pb-3">
             <button
               onClick={() => setSelectedMetric('rainfall')}
-              className={`px-4 py-2 rounded-xl text-xs font-semibold transition-colors flex items-center gap-1.5 ${
+              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shadow-2xs ${
                 selectedMetric === 'rainfall'
-                  ? 'bg-[#2E7D5B] text-white shadow-xs'
-                  : 'bg-white text-[#17352A] border border-[#DCEAE2] hover:bg-[#E8F5EE]'
+                  ? 'bg-[#1557B0] text-white shadow-xs'
+                  : 'bg-white text-[#0F2742] border border-[#D7E7F5] hover:bg-[#F5FAFF]'
               }`}
             >
-              <BarChart3 className="w-4 h-4" /> Rainfall Dynamics
+              <Droplets className="w-4 h-4 text-cyan-300" />
+              <span>Rainfall Trajectory</span>
             </button>
             <button
               onClick={() => setSelectedMetric('temp')}
               disabled={!hasTemp}
-              className={`px-4 py-2 rounded-xl text-xs font-semibold transition-colors flex items-center gap-1.5 disabled:opacity-50 ${
+              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 disabled:opacity-50 shadow-2xs ${
                 selectedMetric === 'temp'
-                  ? 'bg-[#2E7D5B] text-white shadow-xs'
-                  : 'bg-white text-[#17352A] border border-[#DCEAE2] hover:bg-[#E8F5EE]'
+                  ? 'bg-[#1557B0] text-white shadow-xs'
+                  : 'bg-white text-[#0F2742] border border-[#D7E7F5] hover:bg-[#F5FAFF]'
               }`}
             >
-              <LineChart className="w-4 h-4" /> Temperature Warming
+              <Thermometer className="w-4 h-4 text-orange-400" />
+              <span>Thermal Anomalies</span>
             </button>
           </div>
 
@@ -111,36 +126,7 @@ export const ClimatePage: React.FC = () => {
           ) : (
             <TemperatureTrendChart data={points} />
           )}
-
-          <div className="bg-white border border-[#DCEAE2] rounded-2xl p-5 shadow-xs space-y-4">
-            <div className="border-b border-[#DCEAE2] pb-3">
-              <h3 className="font-bold text-base text-[#17352A]">
-                Heavy rain days ({data.period})
-              </h3>
-              <p className="text-xs text-[#6B7D74]">
-                Days with ≥115 mm daily precipitation — the same engineering heuristic the
-                advisory engine uses; not an IMD criterion.
-              </p>
-            </div>
-
-            <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3">
-              {points.map((pt) => (
-                <div
-                  key={pt.year}
-                  className="bg-[#F7FBF8] border border-[#DCEAE2] p-3 rounded-xl text-center space-y-1"
-                >
-                  <span className="text-xs font-bold text-[#6B7D74]">{pt.year}</span>
-                  <div className="text-xl font-extrabold text-[#2E7D5B]">{pt.extremeEventsCount}</div>
-                  <span className="text-[10px] text-[#6B7D74]">Heavy-rain days</span>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {data.disclaimer && (
-            <p className="text-[11px] text-[#6B7D74] leading-relaxed">{data.disclaimer}</p>
-          )}
-        </>
+        </div>
       )}
     </div>
   );

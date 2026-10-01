@@ -12,6 +12,8 @@ from typing import Any, Dict, List, Literal, Optional
 
 from pydantic import BaseModel, Field, computed_field
 
+# Forward declare BlendedForecastMetadata to avoid errors if needed, but we can just define it below.
+
 # Intent labels supported by the MVP router (same names as the architecture doc).
 Intent = Literal[
     "forecast_current",   # current conditions and/or a forecast question
@@ -156,6 +158,114 @@ class WeatherBundle(BaseModel):
     source_agreement: Optional[str] = None
     fused_sources: List[str] = Field(default_factory=list)
     disagreement_flag: bool = False
+    
+    # SIH26081: Multi-Model Blending Metadata
+    blending_metadata: Optional[BlendedForecastMetadata] = None
+
+class ModelForecast(BaseModel):
+    model_name: str
+    weight: float
+    model_type: str = "NWP"          # "NWP" | "AI/ML" — honest label, never inferred
+    temperature_c: Optional[float] = None
+    precipitation_mm: Optional[float] = None
+    wind_speed_kmh: Optional[float] = None
+
+
+class CalibrationMetadata(BaseModel):
+    calibrated_at: str
+    evaluation_period: str
+    lead_time: str = "+24h"
+    location: str = "Mumbai (19.08°N, 72.88°E)"
+    latitude: Optional[float] = 19.0760
+    longitude: Optional[float] = 72.8777
+    reference_dataset: str = "ERA5 Reanalysis"
+    metric: str = "MAE"
+    sample_counts: Dict[str, int]
+    mae: Dict[str, float]
+    rmse: Optional[Dict[str, float]] = None
+    weights: Dict[str, float]
+    epsilon: float = 0.01
+    weighting_scheme: str = "inverse-MAE skill"
+    total_eval_samples: Optional[int] = None
+    is_valid: bool = True
+
+
+class LeadTimeCalibrationProfile(BaseModel):
+    """Calibrated historical accuracy profile for a specific forecast lead time."""
+
+    lead_time: str
+    offset_parameter: str
+    sample_counts: Dict[str, int]
+    mae: Dict[str, float]
+    rmse: Dict[str, float]
+    skill: Dict[str, float]
+    weights: Dict[str, float]
+    total_eval_samples: Optional[int] = None
+    is_valid: bool = True
+
+
+class LeadTimeCalibrationResult(BaseModel):
+    """Container for multi-lead-time calibration profiles (SIH26081 Stage 3)."""
+
+    region: str = "Mumbai"
+    location: str = "Mumbai (19.08°N, 72.88°E)"
+    latitude: Optional[float] = 19.0760
+    longitude: Optional[float] = 72.8777
+    variable: str = "temperature"
+    evaluation_period: str
+    reference_dataset: str = "ERA5 Reanalysis (Open-Meteo Archive API)"
+    metric: str = "MAE"
+    epsilon: float = 0.01
+    weighting_scheme: str = "inverse-MAE skill: 1 / (MAE + epsilon)"
+    calibrated_at: str
+    lead_times: Dict[str, LeadTimeCalibrationProfile]
+
+
+
+
+class AdaptiveWeightAudit(BaseModel):
+    base_weights: Dict[str, float]
+    final_weights: Dict[str, float]
+    lead_time: int
+    region: str
+    weather_regime: str
+    variable: str
+    calibration_status: str = "FALLBACK"  # "CALIBRATED" | "FALLBACK"
+    calibrated_dimensions: List[str] = Field(default_factory=list)
+    fallback_dimensions: List[str] = Field(default_factory=list)
+    adjustments: Dict[str, float] = Field(default_factory=dict)
+    explanation: str = "Final weights are derived from historical model skill and contextual calibration where validated data is available."
+
+    # Stage 3 Lead-Time & 90-Day Auditability
+    calibration_source: Optional[str] = None
+    calibration_window: Optional[str] = None
+    selected_lead_time: Optional[str] = None
+    requested_lead_time: Optional[float] = None
+    selected_calibration_bucket: Optional[str] = None
+    fallback_reason: Optional[str] = None
+    model_availability: Dict[str, bool] = Field(default_factory=dict)
+
+    def __iter__(self):
+        return iter((self.final_weights, self))
+
+
+
+class BlendedForecastMetadata(BaseModel):
+    region: str
+    season: str
+    weather_regime: str
+    lead_time_hours: int
+    target_time: Optional[str] = None  # ISO local timestamp the blend corresponds to (e.g. "2026-10-01T17:00")
+    models: List[ModelForecast] = Field(default_factory=list)
+    extreme_weather_indicators: List[str] = Field(default_factory=list)
+    blended_temperature_c: Optional[float] = None
+    blended_precipitation_mm: Optional[float] = None
+    blended_wind_speed_kmh: Optional[float] = None
+    calibration_mode: str = "FALLBACK"  # "CALIBRATED" | "FALLBACK"
+    calibration_metadata: Optional[CalibrationMetadata] = None
+    adaptive_audit: Optional[AdaptiveWeightAudit] = None
+
+
 
 
 

@@ -26,7 +26,7 @@ function run(step, cmd, args) {
   const bin = cmd === 'npm' ? npm : npx;
   const finalArgs = cmd === 'npm' ? args : [cmd, ...args];
   console.log(`\n=== ${step} ===`);
-  const res = spawnSync(bin, finalArgs, { cwd: FE, stdio: 'inherit' });
+  const res = spawnSync(bin, finalArgs, { cwd: FE, stdio: 'inherit', shell: true });
   if (res.status !== 0) {
     console.error(`✖ ${step} FAILED (exit ${res.status})`);
     process.exit(1);

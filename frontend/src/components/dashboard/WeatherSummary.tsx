@@ -69,8 +69,8 @@ export const WeatherSummary: React.FC = () => {
   return (
     <section className="space-y-3">
       <div className="flex items-center justify-between">
-        <h3 className="font-bold text-[#17352A] text-lg">Current observations</h3>
-        <span className="text-xs text-[#6B7D74]">
+        <h3 className="font-bold text-[#0F2742] text-lg">Current observations</h3>
+        <span className="text-xs text-[#5D7188]">
           Open-Meteo current block · research/repro
         </span>
       </div>
@@ -81,21 +81,21 @@ export const WeatherSummary: React.FC = () => {
           return (
             <div
               key={idx}
-              className="bg-white border border-[#DCEAE2] rounded-xl p-4 shadow-xs hover:border-[#6BAF92] transition-colors"
+              className="card-3d bg-white border border-[#D7E7F5] rounded-xl p-4 shadow-xs hover:border-[#3B82F6]/50 transition-colors"
             >
               <div className="flex items-center justify-between mb-2">
-                <span className="text-xs font-medium text-[#6B7D74]">{m.title}</span>
-                <div className="p-1.5 rounded-lg bg-[#E8F5EE] text-[#2E7D5B]">
+                <span className="text-xs font-medium text-[#5D7188]">{m.title}</span>
+                <div className="p-1.5 rounded-lg bg-[#DCEEFF]/50 text-[#1557B0]">
                   <Icon className="w-4 h-4" />
                 </div>
               </div>
-              <div className="text-xl font-bold text-[#17352A]">{m.value}</div>
+              <div className="text-xl font-bold text-[#0F2742]">{m.value}</div>
             </div>
           );
         })}
       </div>
 
-      <p className="text-[11px] text-[#6B7D74]">
+      <p className="text-[11px] text-[#5D7188]">
         Values are the provider's reported current conditions. Open-Meteo is research/reproducibility
         data; there is no live IMD feed wired into this build.
       </p>

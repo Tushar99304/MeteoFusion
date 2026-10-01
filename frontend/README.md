@@ -1,4 +1,4 @@
-# WeatherGPT — Grounded Conversational Weather Intelligence Platform
+# MeteoFusion — Adaptive AI–NWP Multi-Model Forecast Blending System
 
 **Smart India Hackathon (SIH) 2026 Project Prototype**
 
@@ -8,12 +8,12 @@
 
 ## 🌟 Core Product Architecture & Idea
 
-WeatherGPT is **NOT** simply "ChatGPT + weather API". It is a grounded, evidence-backed conversational weather intelligence system built specifically for the Indian meteorological context.
+MeteoFusion is **NOT** simply "ChatGPT + weather API". It is a grounded, evidence-backed conversational weather intelligence system built specifically for the Indian meteorological context.
 
 ```
 USER QUERY (English / Hindi / Marathi / Hinglish)
        ↓
-  WeatherGPT
+  MeteoFusion
        ↓
 Understand Intent + Location + Timeframe + Language
        ↓
@@ -37,7 +37,7 @@ Actionable Multilingual Response
 
 ## 🎨 Design System & Theme
 
-WeatherGPT uses a **Natural Light-Green Weather Theme** tailored for modern Indian civic-tech products:
+MeteoFusion uses a **Natural Light-Green Weather Theme** tailored for modern Indian civic-tech products:
 
 - **Primary Green**: `#2E7D5B`
 - **Primary Light**: `#E8F5EE`
@@ -94,7 +94,7 @@ To showcase the application to SIH judges without requiring an active backend se
 2. **Dashboard Exploration**: View live weather cards for Mumbai, New Delhi, Pune, Bengaluru, or Manali.
 3. **Conversational AI Query**: Type or ask: `"Kal Mumbai mein baarish hogi kya?"`
 4. **Inspect Provenance**: Click **`Why this answer?`** on any AI response to inspect the IMD evidence metadata drawer.
-5. **View Intent Routing**: Expand **`How WeatherGPT understood your question`** to demonstrate intent parsing, Hinglish translation, and source validation.
+5. **View Intent Routing**: Expand **`How MeteoFusion understood your question`** to demonstrate intent parsing, Hinglish translation, and source validation.
 6. **Live Map & Layers**: Open **Live Map** (`/map`) and toggle between Rainfall Radar, Temperature, Wind Vector, and IMD Warning zones.
 7. **Official Warnings**: Navigate to **Alerts** (`/alerts`) to inspect CAP-format NDMA SACHET disaster warnings.
 8. **Simulate Offline Mode**: Disconnect your internet connection or inspect **Offline Center** (`/offline`) to demonstrate cached resilience and emergency disaster protocols.
@@ -106,7 +106,7 @@ To showcase the application to SIH judges without requiring an active backend se
 | Route | Feature Page | Key Highlights |
 |---|---|---|
 | `/` | **Dashboard** | Hero input, `CurrentWeatherCard`, `WeatherInsightCard`, hourly scroll & 7-day forecast |
-| `/chat` | **WeatherGPT Chat** | Grounded conversational assistant with `Why this answer?` evidence provenance |
+| `/chat` | **MeteoFusion Chat** | Grounded conversational assistant with `Why this answer?` evidence provenance |
 | `/forecast` | **Forecast Center** | 24-hr nowcast trend & 7-day district meteorological outlook |
 | `/map` | **Live Map** | Interactive Leaflet map with temperature, rain radar, wind vectors, and alert circles |
 | `/alerts` | **Alert Center** | Official IMD & NDMA SACHET disaster warnings with CAP directives |
@@ -121,7 +121,7 @@ To showcase the application to SIH judges without requiring an active backend se
 
 ## 🔌 FastAPI Backend Integration Contract
 
-The app calls the existing WeatherGPT backend over **relative URLs** (`/api/...`, `/health`).
+The app calls the existing MeteoFusion backend over **relative URLs** (`/api/...`, `/health`).
 `VITE_API_BASE_URL` defaults to blank (same origin): in development `npm run dev` proxies the
 calls to `http://localhost:8000` (`vite.config.ts`; override with `VITE_PROXY_TARGET`), and in
 production the built `dist/` is served by FastAPI itself. No secrets ever live in the frontend.

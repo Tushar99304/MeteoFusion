@@ -48,7 +48,7 @@ export const SourceBadge: React.FC<SourceBadgeProps> = ({
     label = 'GFS model · research/repro';
     Icon = Database;
   } else {
-    badgeStyle = 'bg-[#E8F5EE] text-[#2E7D5B] border-[#6BAF92]/40';
+    badgeStyle = 'bg-[#DCEEFF]/50 text-[#1557B0] border-[#3B82F6]/30';
     label = s;
     Icon = ShieldCheck;
   }

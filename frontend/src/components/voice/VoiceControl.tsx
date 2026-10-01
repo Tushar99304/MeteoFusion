@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useVoiceRecognition } from '../../hooks/useVoiceRecognition';
 import { askWeatherGPT } from '../../services/chatService';
-import { ttsLang } from '../../services/voiceService';
+import { ttsLang, voiceService } from '../../services/voiceService';
 import { useWeatherStore } from '../../store/useWeatherStore';
 import { Mic, Volume2, Sparkles, Languages } from 'lucide-react';
 import { EvidencePanel } from '../common/EvidencePanel';
@@ -44,10 +44,10 @@ export const VoiceControl: React.FC = () => {
       });
 
       // Automatically speak out the grounded response in the matching locale (hi-IN/mr-IN/en-IN).
-      speakText(res.message, ttsLang(selectedLang));
+      voiceService.speak(res.message, ttsLang(selectedLang));
     } catch {
       setLastResponse({
-        text: 'Sorry — the WeatherGPT backend could not be reached, so I will not invent an answer. Please try again shortly.',
+        text: 'Sorry — the MeteoFusion backend could not be reached, so I will not invent an answer. Please try again shortly.',
       });
     } finally {
       setIsProcessingResponse(false);
@@ -72,7 +72,7 @@ export const VoiceControl: React.FC = () => {
       case 'processing':
         return 'Retrieving & validating weather evidence...';
       case 'speaking':
-        return 'WeatherGPT is speaking response...';
+        return 'MeteoFusion is speaking response...';
       case 'error':
         return errorMessage || 'Could not recognize speech.';
       default:
@@ -81,11 +81,15 @@ export const VoiceControl: React.FC = () => {
   };
 
   return (
-    <div className="bg-white border border-[#DCEAE2] rounded-3xl p-6 sm:p-8 shadow-xs max-w-2xl mx-auto space-y-6 text-center">
+    <div className="card-3d bg-white/90 backdrop-blur-md border border-[#D7E7F5] rounded-3xl p-6 sm:p-10 shadow-lg max-w-2xl mx-auto space-y-8 text-center relative overflow-hidden">
+      {/* Background glow decoration */}
+      <div className="absolute -top-24 -left-24 w-64 h-64 bg-[#3B82F6]/5 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute -bottom-24 -right-24 w-64 h-64 bg-[#06B6D4]/5 rounded-full blur-3xl pointer-events-none" />
+
       {/* Language Switcher Pills */}
-      <div className="flex flex-wrap items-center justify-center gap-2">
-        <span className="text-xs text-[#6B7D74] flex items-center gap-1 mr-2">
-          <Languages className="w-4 h-4 text-[#2E7D5B]" /> Language:
+      <div className="flex flex-wrap items-center justify-center gap-2 relative z-10">
+        <span className="text-xs text-[#5D7188] flex items-center gap-1.5 mr-1 font-medium">
+          <Languages className="w-3.5 h-3.5 text-[#3B82F6]" /> Dialect:
         </span>
         {[
           { code: 'en', label: 'English' },
@@ -96,10 +100,10 @@ export const VoiceControl: React.FC = () => {
           <button
             key={l.code}
             onClick={() => setSelectedLang(l.code as any)}
-            className={`px-3 py-1 rounded-full text-xs font-semibold border transition-all ${
+            className={`px-3.5 py-1.5 rounded-full text-xs font-semibold border transition-all ${
               selectedLang === l.code
-                ? 'bg-[#2E7D5B] text-white border-[#2E7D5B] shadow-xs'
-                : 'bg-[#F7FBF8] text-[#17352A] border-[#DCEAE2] hover:bg-[#E8F5EE]'
+                ? 'bg-[#1557B0] text-white border-[#1557B0] shadow-sm'
+                : 'bg-[#F5FAFF] text-[#0F2742] border-[#D7E7F5] hover:bg-[#DCEEFF]/50'
             }`}
           >
             {l.label}
@@ -107,60 +111,82 @@ export const VoiceControl: React.FC = () => {
         ))}
       </div>
 
-      {/* Big Mic Button Centerpiece */}
-      <div className="py-6 flex flex-col items-center justify-center">
-        <button
-          onClick={handleMicToggle}
-          className={`w-32 h-32 rounded-full flex items-center justify-center transition-all duration-300 shadow-xl ${
-            voiceState === 'listening'
-              ? 'bg-red-500 text-white ring-8 ring-red-200 animate-pulse scale-105'
-              : voiceState === 'speaking'
-              ? 'bg-[#2E7D5B] text-white ring-8 ring-[#E8F5EE] scale-105'
-              : 'bg-gradient-to-br from-[#2E7D5B] to-[#6BAF92] text-white hover:scale-105'
-          }`}
-        >
-          {voiceState === 'listening' ? (
-            <Mic className="w-14 h-14 animate-bounce" />
-          ) : voiceState === 'speaking' ? (
-            <Volume2 className="w-14 h-14 animate-pulse" />
-          ) : (
-            <Mic className="w-14 h-14" />
+      {/* Big Mic Button Centerpiece with Sound Wave Rings */}
+      <div className="py-8 flex flex-col items-center justify-center relative">
+        <div className="relative flex items-center justify-center">
+          {/* Animated concentric sound wave rings */}
+          {voiceState === 'listening' && (
+            <>
+              <div className="absolute w-48 h-48 rounded-full border-2 border-red-400/40 animate-ping pointer-events-none" />
+              <div className="absolute w-40 h-40 rounded-full border border-red-400/60 animate-pulse pointer-events-none" />
+            </>
           )}
-        </button>
 
-        <p className="font-bold text-base text-[#17352A] mt-4">{renderStatusText()}</p>
+          {voiceState === 'speaking' && (
+            <>
+              <div className="absolute w-48 h-48 rounded-full border-2 border-[#06B6D4]/30 animate-ping pointer-events-none" />
+              <div className="absolute w-40 h-40 rounded-full border border-[#3B82F6]/40 animate-pulse pointer-events-none" />
+            </>
+          )}
+
+          {voiceState === 'idle' && (
+            <div className="absolute w-36 h-36 rounded-full bg-[#DCEEFF]/30 animate-pulse pointer-events-none" />
+          )}
+
+          <button
+            onClick={handleMicToggle}
+            className={`relative z-10 w-28 h-28 rounded-full flex items-center justify-center transition-all duration-300 shadow-xl ${
+              voiceState === 'listening'
+                ? 'bg-gradient-to-tr from-red-600 to-rose-500 text-white ring-8 ring-red-100 scale-105'
+                : voiceState === 'speaking'
+                ? 'bg-gradient-to-tr from-[#1557B0] to-[#06B6D4] text-white ring-8 ring-[#DCEEFF] scale-105'
+                : 'bg-gradient-to-tr from-[#1557B0] to-[#3B82F6] text-white hover:scale-105 hover:shadow-2xl ring-4 ring-white'
+            }`}
+            aria-label={voiceState === 'listening' ? 'Stop listening' : 'Start listening'}
+          >
+            {voiceState === 'listening' ? (
+              <Mic className="w-12 h-12 animate-bounce" />
+            ) : voiceState === 'speaking' ? (
+              <Volume2 className="w-12 h-12 animate-pulse" />
+            ) : (
+              <Mic className="w-12 h-12" />
+            )}
+          </button>
+        </div>
+
+        <p className="font-semibold text-sm text-[#0F2742] mt-6 tracking-wide">{renderStatusText()}</p>
         {!isSupported && (
-          <p className="text-xs text-amber-700 bg-amber-50 border border-amber-200 px-3 py-1 rounded-lg mt-2">
-            Speech Recognition is limited on this browser. Web Speech API fallback active.
+          <p className="text-xs text-amber-700 bg-amber-50 border border-amber-200 px-3 py-1.5 rounded-lg mt-3">
+            Speech Recognition is limited on this browser engine. Web Speech API fallback active.
           </p>
         )}
       </div>
 
       {/* Transcript Box */}
       {transcript && (
-        <div className="bg-[#F7FBF8] border border-[#DCEAE2] p-4 rounded-2xl text-left space-y-1">
-          <span className="text-[11px] font-bold text-[#6B7D74] uppercase tracking-wider">You said:</span>
-          <p className="text-sm font-semibold text-[#17352A]">"{transcript}"</p>
+        <div className="bg-[#F5FAFF] border border-[#D7E7F5] p-4 rounded-2xl text-left space-y-1 relative z-10">
+          <span className="text-[10px] font-bold text-[#5D7188] uppercase tracking-wider font-mono">Recognized Speech:</span>
+          <p className="text-sm font-semibold text-[#0F2742]">"{transcript}"</p>
         </div>
       )}
 
       {/* Response Display Box */}
       {lastResponse && (
-        <div className="bg-[#E8F5EE] border border-[#6BAF92]/40 p-5 rounded-2xl text-left space-y-4 animate-in fade-in duration-200">
+        <div className="bg-[#DCEEFF]/30 border border-[#3B82F6]/30 p-5 rounded-2xl text-left space-y-4 animate-in fade-in duration-200 relative z-10">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-[#2E7D5B] flex items-center gap-1.5">
-              <Sparkles className="w-4 h-4" /> WeatherGPT Response
+            <span className="text-xs font-bold text-[#1557B0] flex items-center gap-1.5">
+              <Sparkles className="w-4 h-4 text-[#06B6D4]" /> Synthesized Evidence Response
             </span>
             <button
               onClick={() => speakText(lastResponse.text, ttsLang(selectedLang))}
-              className="p-1.5 rounded-lg bg-white text-[#2E7D5B] hover:bg-[#2E7D5B] hover:text-white transition-colors"
+              className="p-1.5 rounded-lg bg-white text-[#1557B0] border border-[#D7E7F5] hover:bg-[#3B82F6] hover:text-white transition-all shadow-2xs"
               title="Replay Voice Response"
             >
               <Volume2 className="w-4 h-4" />
             </button>
           </div>
 
-          <p className="text-sm text-[#17352A] font-medium leading-relaxed bg-white p-3.5 rounded-xl border border-[#DCEAE2]">
+          <p className="text-sm text-[#0F2742] font-medium leading-relaxed bg-white/90 p-4 rounded-xl border border-[#D7E7F5]">
             "{lastResponse.text}"
           </p>
 

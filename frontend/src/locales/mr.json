@@ -1,12 +1,12 @@
 {
   "app": {
-    "title": "WeatherGPT",
+    "title": "MeteoFusion",
     "subtitle": "विश्वसनीय हवामान बुद्धिमत्ता",
     "tagline": "अधिकृत IMD व NDMA पुराव्यांवर आधारित संवादपूर्ण हवामान अंदाज"
   },
   "nav": {
     "overview": "डॅशबोर्ड",
-    "chat": "WeatherGPT चॅट",
+    "chat": "MeteoFusion चॅट",
     "forecast": "हवामान अंदाज",
     "map": "थेट नकाशा",
     "alerts": "हवामान इशारे",

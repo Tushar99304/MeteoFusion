@@ -16,15 +16,15 @@ export const WeatherInsightCard: React.FC = () => {
   const quality = advisory?.riskLevel;
 
   return (
-    <div className="bg-[#E8F5EE] border border-[#6BAF92]/40 rounded-2xl p-5 shadow-xs space-y-4">
+    <div className="card-3d bg-[#DCEEFF]/30 border border-[#3B82F6]/30 rounded-2xl p-5 shadow-xs space-y-4">
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-[#2E7D5B] text-white flex items-center justify-center">
-            <Sparkles className="w-4 h-4" />
+        <div className="flex items-center gap-2.5">
+          <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-[#1557B0] to-[#3B82F6] text-white flex items-center justify-center shadow-xs">
+            <Sparkles className="w-4 h-4 text-[#06B6D4]" />
           </div>
           <div>
-            <h3 className="font-bold text-base text-[#17352A]">Deterministic risk advisory</h3>
-            <span className="text-[11px] text-[#6B7D74]">
+            <h3 className="font-bold text-base text-[#0F2742]">Deterministic Risk Advisory</h3>
+            <span className="text-[11px] text-[#5D7188]">
               Computed by the backend from validated evidence — never by the LLM
             </span>
           </div>
@@ -34,33 +34,33 @@ export const WeatherInsightCard: React.FC = () => {
 
       {headline ? (
         <div className="space-y-2">
-          <p className="text-sm text-[#17352A] leading-relaxed font-medium bg-white/80 p-3.5 rounded-xl border border-[#DCEAE2]">
+          <p className="text-sm text-[#0F2742] leading-relaxed font-medium bg-white/90 p-3.5 rounded-xl border border-[#D7E7F5]">
             “{headline}”
           </p>
           {reason && (
-            <p className="text-xs text-[#6B7D74] leading-relaxed bg-white/60 p-3 rounded-xl border border-[#DCEAE2]">
+            <p className="text-xs text-[#5D7188] leading-relaxed bg-white/70 p-3 rounded-xl border border-[#D7E7F5]">
               {reason}
             </p>
           )}
         </div>
       ) : (
-        <p className="text-xs text-[#6B7D74] bg-white/60 p-3 rounded-xl border border-[#DCEAE2] flex items-start gap-2">
-          <Info className="w-4 h-4 mt-0.5 shrink-0 text-[#2E7D5B]" />
+        <p className="text-xs text-[#5D7188] bg-white/70 p-3 rounded-xl border border-[#D7E7F5] flex items-start gap-2">
+          <Info className="w-4 h-4 mt-0.5 shrink-0 text-[#3B82F6]" />
           Loading the deterministic advisory for this location. If evidence is insufficient the
           backend will say so rather than guess.
         </p>
       )}
 
-      <div className="flex flex-wrap items-center justify-between gap-3 text-xs pt-1 border-t border-[#DCEAE2]/60">
+      <div className="flex flex-wrap items-center justify-between gap-3 text-xs pt-1 border-t border-[#D7E7F5]">
         <div className="flex items-center gap-2">
-          <span className="text-[#6B7D74] font-medium">Weather-related risk:</span>
-          <span className="px-2.5 py-0.5 rounded-md bg-white text-[#2E7D5B] font-bold border border-[#6BAF92]/40">
+          <span className="text-[#5D7188] font-medium">Weather-related risk:</span>
+          <span className="px-2.5 py-0.5 rounded-md bg-white text-[#1557B0] font-bold border border-[#D7E7F5] shadow-2xs font-mono">
             {quality ?? '—'}
           </span>
         </div>
 
-        <div className="flex items-center gap-1.5 text-[#6B7D74]">
-          <ShieldCheck className="w-4 h-4 text-[#2E7D5B]" />
+        <div className="flex items-center gap-1.5 text-[#5D7188]">
+          <ShieldCheck className="w-4 h-4 text-[#16A34A]" />
           {usingSample ? (
             <span>Sample demo data — not a live source</span>
           ) : (
@@ -74,7 +74,7 @@ export const WeatherInsightCard: React.FC = () => {
       </div>
 
       {advisory?.disclaimer && (
-        <p className="text-[10px] text-[#6B7D74] leading-relaxed">{advisory.disclaimer}</p>
+        <p className="text-[10px] text-[#5D7188] leading-relaxed">{advisory.disclaimer}</p>
       )}
     </div>
   );

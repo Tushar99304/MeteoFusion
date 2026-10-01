@@ -7,7 +7,7 @@ export const INITIAL_CHAT_MESSAGES: ChatMessage[] = [
     // real official SACHET alert) arrive from the backend only after the user asks a question.
     id: 'msg-welcome',
     sender: 'assistant',
-    text: 'Namaste! I am WeatherGPT, your grounded weather intelligence assistant. Ask about live weather, official NDMA/SACHET alerts, or travel safety for a city or district — in English, Hindi, Hinglish or Marathi. For example: “Is it safe to travel in Mumbai?” and then just “What about tomorrow?”.',
+    text: 'Namaste! I am MeteoFusion, your grounded weather intelligence assistant. Ask about live weather, official NDMA/SACHET alerts, or travel safety for a city or district — in English, Hindi, Hinglish or Marathi. For example: “Is it safe to travel in Mumbai?” and then just “What about tomorrow?”.',
     timestamp: '',
   },
 ];

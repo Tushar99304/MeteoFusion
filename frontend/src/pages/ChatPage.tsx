@@ -42,20 +42,19 @@ export const ChatPage: React.FC = () => {
       .catch(() => {
         addMessage({
           sender: 'assistant',
-          text: 'Sorry — the WeatherGPT backend could not be reached. Please try again when connectivity is restored; I will not invent weather data.',
+          text: 'Sorry — the MeteoFusion backend could not be reached. Please try again when connectivity is restored; I will not invent weather data.',
         });
       });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [query]);
 
   return (
-    <div className="space-y-4">
-      <div>
-        <h1 className="text-xl font-bold text-[#17352A]">WeatherGPT Conversational Assistant</h1>
-        <p className="text-xs text-[#6B7D74]">
-          Answers are grounded in retrieved evidence (Open-Meteo model data + official NDMA/SACHET
-          alerts). If evidence is insufficient the assistant abstains or asks for clarification — it
-          never guesses.
+    <div className="space-y-4 max-w-5xl mx-auto">
+      <div className="bg-white/80 backdrop-blur-md p-5 rounded-2xl border border-[#D7E7F5] shadow-xs">
+        <h1 className="text-xl font-bold text-[#0F2742] tracking-tight">AI Weather Intelligence Assistant</h1>
+        <p className="text-xs text-[#5D7188] mt-1 leading-relaxed">
+          Operational conversational system grounded in multi-model NWP blended outputs and official NDMA/SACHET
+          disaster alerts. The assistant never hallucinates: if data is unavailable or insufficient, it explicitly abstains.
         </p>
       </div>
 

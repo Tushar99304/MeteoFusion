@@ -62,73 +62,83 @@ export const OfflineCenter: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Top Banner Status */}
-      <div className="bg-amber-50 border border-amber-200 rounded-2xl p-5 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <div className={`card-3d rounded-2xl p-5 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 ${
+        connection.isOnline
+          ? 'bg-white border border-[#D7E7F5]'
+          : 'bg-amber-50/80 border border-amber-200'
+      }`}>
         <div className="flex items-center gap-3">
-          <div className="p-3 bg-amber-100 text-amber-900 rounded-xl">
+          <div className={`p-3 rounded-xl ${
+            connection.isOnline ? 'bg-[#DCEEFF]/50 text-[#1557B0]' : 'bg-amber-100 text-amber-900'
+          }`}>
             <WifiOff className="w-6 h-6" />
           </div>
           <div>
-            <h2 className="font-bold text-base text-[#17352A]">Offline Meteorological Center</h2>
-            <p className="text-xs text-[#6B7D74]">
+            <h2 className="font-bold text-base text-[#0F2742]">Offline Meteorological Resilience</h2>
+            <p className="text-xs text-[#5D7188] mt-0.5">
               {connection.isOnline
-                ? 'Online Mode — Cached copies saved automatically for offline access.'
-                : `Offline Mode Active — last synchronized ${connection.lastSyncedAt ? 'at ' + connection.lastSyncedAt : 'time unknown'}`}
+                ? 'Online Mode — Observations and model forecasts are continuously cached locally.'
+                : `Offline Mode Active — Showing last synchronized weather evidence (${connection.lastSyncedAt ? 'Synced at ' + connection.lastSyncedAt : 'Timestamp unavailable'}).`}
             </p>
           </div>
         </div>
 
         <div className="text-right">
-          <span className="px-3 py-1 bg-amber-100 text-amber-900 rounded-lg text-xs font-bold border border-amber-300">
-            {connection.isOnline ? 'CACHE SYNCED' : 'OFFLINE ACTIVE'}
+          <span className={`px-3 py-1.5 rounded-lg text-xs font-bold border ${
+            connection.isOnline 
+              ? 'bg-[#DCEEFF]/40 text-[#1557B0] border-[#D7E7F5]'
+              : 'bg-amber-100 text-amber-900 border-amber-300'
+          }`}>
+            {connection.isOnline ? 'CACHE SYNCHRONIZED' : 'OFFLINE ACTIVE'}
           </span>
         </div>
       </div>
 
       {/* Cached Weather Overview */}
       {currentWeather && (
-        <div className="bg-white border border-[#DCEAE2] rounded-2xl p-5 shadow-xs space-y-3">
-          <div className="flex items-center justify-between border-b border-[#DCEAE2] pb-3">
+        <div className="card-3d bg-white border border-[#D7E7F5] rounded-2xl p-6 shadow-xs space-y-4">
+          <div className="flex items-center justify-between border-b border-[#D7E7F5] pb-3">
             <div className="flex items-center gap-2">
-              <HardDrive className="w-5 h-5 text-[#2E7D5B]" />
-              <h3 className="font-bold text-sm text-[#17352A]">Last Synchronized Weather Snapshot</h3>
+              <HardDrive className="w-5 h-5 text-[#3B82F6]" />
+              <h3 className="font-bold text-sm text-[#0F2742]">Last Synchronized Weather Snapshot</h3>
             </div>
-            <span className="text-xs text-[#6B7D74] flex items-center gap-1">
+            <span className="text-xs text-[#5D7188] flex items-center gap-1 font-mono">
               <Clock className="w-3.5 h-3.5" /> Synced: {currentWeather.observedAt}
             </span>
           </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
-            <div className="bg-[#F7FBF8] p-3 rounded-xl border border-[#DCEAE2]">
-              <span className="text-[#6B7D74]">Location</span>
-              <div className="font-bold text-[#17352A] mt-0.5">{currentWeather.location}</div>
+            <div className="bg-[#F5FAFF] p-3.5 rounded-xl border border-[#D7E7F5]">
+              <span className="text-[#5D7188] font-medium">Station Location</span>
+              <div className="font-bold text-[#0F2742] mt-0.5">{currentWeather.location}</div>
             </div>
-            <div className="bg-[#F7FBF8] p-3 rounded-xl border border-[#DCEAE2]">
-              <span className="text-[#6B7D74]">Temperature</span>
-              <div className="font-bold text-[#17352A] mt-0.5">
+            <div className="bg-[#F5FAFF] p-3.5 rounded-xl border border-[#D7E7F5]">
+              <span className="text-[#5D7188] font-medium">Temperature</span>
+              <div className="font-bold text-[#0F2742] mt-0.5">
                 {currentWeather.temperature != null
                   ? formatTemp(currentWeather.temperature, preferences.tempUnit)
                   : '—'}
               </div>
             </div>
-            <div className="bg-[#F7FBF8] p-3 rounded-xl border border-[#DCEAE2]">
-              <span className="text-[#6B7D74]">Precipitation</span>
-              <div className="font-bold text-[#17352A] mt-0.5">
+            <div className="bg-[#F5FAFF] p-3.5 rounded-xl border border-[#D7E7F5]">
+              <span className="text-[#5D7188] font-medium">Precipitation</span>
+              <div className="font-bold text-[#0F2742] mt-0.5">
                 {currentWeather.rainfall != null ? `${currentWeather.rainfall} mm` : '—'}
                 {currentWeather.rainProbability != null ? ` (${currentWeather.rainProbability}%)` : ''}
               </div>
             </div>
-            <div className="bg-[#F7FBF8] p-3 rounded-xl border border-[#DCEAE2]">
-              <span className="text-[#6B7D74]">Source</span>
-              <div className="font-bold text-[#2E7D5B] mt-0.5">{currentWeather.source}</div>
+            <div className="bg-[#F5FAFF] p-3.5 rounded-xl border border-[#D7E7F5]">
+              <span className="text-[#5D7188] font-medium">Data Provenance</span>
+              <div className="font-bold text-[#1557B0] mt-0.5">{currentWeather.source}</div>
             </div>
           </div>
 
           {!connection.isOnline && (
-            <div className="bg-amber-50 text-amber-900 border border-amber-200 p-3 rounded-xl text-xs flex items-center gap-2 font-medium">
+            <div className="bg-amber-50 text-amber-900 border border-amber-200 p-3.5 rounded-xl text-xs flex items-center gap-2.5 font-medium">
               <ShieldAlert className="w-4 h-4 text-amber-700 shrink-0" />
               <span>
-                Live updates are unavailable. Showing the last cached grounded evidence — not fresh
-                observations and not official IMD data. Follow current official advisories directly.
+                Live feeds currently severed. Showing the last synchronized weather evidence without speculative interpolation.
+                Adhere directly to official emergency broadcaster frequencies if severe weather develops.
               </span>
             </div>
           )}
@@ -136,10 +146,10 @@ export const OfflineCenter: React.FC = () => {
       )}
 
       {/* Emergency Guidance Protocols */}
-      <div className="bg-white border border-[#DCEAE2] rounded-2xl p-5 shadow-xs space-y-4">
-        <div className="border-b border-[#DCEAE2] pb-3">
-          <h3 className="font-bold text-base text-[#17352A]">Offline Emergency Disaster Protocols</h3>
-          <p className="text-xs text-[#6B7D74]">NDMA SACHET verified actionable guidance accessible without internet connection</p>
+      <div className="card-3d bg-white border border-[#D7E7F5] rounded-2xl p-6 shadow-xs space-y-4">
+        <div className="border-b border-[#D7E7F5] pb-3">
+          <h3 className="font-bold text-base text-[#0F2742]">Offline Emergency Disaster Protocols</h3>
+          <p className="text-xs text-[#5D7188] mt-0.5">NDMA SACHET verified actionable guidance accessible without internet connection</p>
         </div>
 
         <div className="space-y-3">
@@ -148,25 +158,25 @@ export const OfflineCenter: React.FC = () => {
             return (
               <div
                 key={guide.id}
-                className="border border-[#DCEAE2] rounded-xl overflow-hidden bg-[#F7FBF8]"
+                className="border border-[#D7E7F5] rounded-xl overflow-hidden bg-[#F5FAFF]"
               >
                 <button
                   onClick={() => setOpenSection(isOpen ? null : guide.id)}
-                  className="w-full p-4 flex items-center justify-between text-left hover:bg-[#E8F5EE] transition-colors"
+                  className="w-full p-4 flex items-center justify-between text-left hover:bg-[#DCEEFF]/30 transition-colors"
                 >
                   <div className="flex items-center gap-3">
                     <span className="text-xl">{guide.icon}</span>
-                    <span className="font-bold text-sm text-[#17352A]">{guide.title}</span>
+                    <span className="font-bold text-sm text-[#0F2742]">{guide.title}</span>
                   </div>
-                  {isOpen ? <ChevronUp className="w-4 h-4 text-[#6B7D74]" /> : <ChevronDown className="w-4 h-4 text-[#6B7D74]" />}
+                  {isOpen ? <ChevronUp className="w-4 h-4 text-[#5D7188]" /> : <ChevronDown className="w-4 h-4 text-[#5D7188]" />}
                 </button>
 
                 {isOpen && (
-                  <div className="p-4 bg-white border-t border-[#DCEAE2] space-y-2 text-xs">
+                  <div className="p-4 bg-white border-t border-[#D7E7F5] space-y-2 text-xs">
                     {guide.steps.map((step, idx) => (
-                      <div key={idx} className="flex items-start gap-2 text-[#17352A]">
-                        <CheckCircle2 className="w-4 h-4 text-[#2E7D5B] shrink-0 mt-0.5" />
-                        <span>{step}</span>
+                      <div key={idx} className="flex items-start gap-2 text-[#0F2742]">
+                        <CheckCircle2 className="w-4 h-4 text-[#16A34A] shrink-0 mt-0.5" />
+                        <span className="leading-relaxed">{step}</span>
                       </div>
                     ))}
                   </div>

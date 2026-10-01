@@ -24,6 +24,9 @@ import pathlib
 import re
 import sys
 
+if sys.platform == "win32" and hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8")
+
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
@@ -223,7 +226,7 @@ async def case_c(place_from_b: str) -> bool:
 
 async def main() -> int:
     fixture_only = "--fixture" in sys.argv
-    print(f"{HEAD}\nWeatherGPT Phase 2 - NDMA SACHET official alert check "
+    print(f"{HEAD}\nMeteoFusion Phase 2 - NDMA SACHET official alert check "
           f"({'FIXTURE REPLAY' if fixture_only else 'LIVE FEED'})\n{HEAD}")
     results = {}
     results["case_a"] = await case_a()

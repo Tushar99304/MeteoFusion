@@ -1,5 +1,5 @@
 /**
- * LocalStorage / Offline Cache helper for WeatherGPT
+ * LocalStorage / Offline Cache helper for MeteoFusion
  */
 
 const CACHE_PREFIX = 'weathergpt_cache_';

@@ -10,21 +10,21 @@ export const CurrentWeatherCard: React.FC = () => {
 
   if (isLoading && !currentWeather) {
     return (
-      <div className="bg-white border border-[#DCEAE2] rounded-2xl p-6 shadow-xs animate-pulse space-y-4">
-        <div className="h-6 w-48 bg-[#E8F5EE] rounded" />
-        <div className="h-12 w-24 bg-[#E8F5EE] rounded" />
+      <div className="card-3d bg-white border border-[#D7E7F5] rounded-2xl p-6 shadow-xs animate-pulse space-y-4">
+        <div className="h-6 w-48 bg-[#DCEEFF]/40 rounded" />
+        <div className="h-12 w-24 bg-[#DCEEFF]/40 rounded" />
       </div>
     );
   }
 
   if (!currentWeather) {
     return (
-      <div className="bg-white border border-[#DCEAE2] rounded-2xl p-6 shadow-xs space-y-3 text-center">
-        <CloudOff className="w-8 h-8 text-[#6BAF92] mx-auto" />
-        <p className="text-sm font-bold text-[#17352A]">No verified current weather</p>
-        <p className="text-xs text-[#6B7D74]">
+      <div className="card-3d bg-white border border-[#D7E7F5] rounded-2xl p-6 shadow-xs space-y-3 text-center">
+        <CloudOff className="w-8 h-8 text-[#5D7188] mx-auto" />
+        <p className="text-sm font-bold text-[#0F2742]">No verified current weather</p>
+        <p className="text-xs text-[#5D7188]">
           {error ||
-            'The WeatherGPT backend could not provide grounded current conditions for this location yet.'}
+            'The MeteoFusion backend could not provide grounded current conditions for this location yet.'}
         </p>
       </div>
     );
@@ -33,8 +33,8 @@ export const CurrentWeatherCard: React.FC = () => {
   const warningCount = alerts.length;
 
   return (
-    <div className="bg-gradient-to-br from-white via-[#F7FBF8] to-[#E8F5EE]/40 border border-[#DCEAE2] rounded-2xl p-6 shadow-xs relative overflow-hidden">
-      <div className="absolute right-0 top-0 w-64 h-64 bg-[#6BAF92]/10 rounded-full blur-3xl pointer-events-none -mr-12 -mt-12" />
+    <div className="card-3d bg-gradient-to-br from-white via-[#F5FAFF] to-[#DCEEFF]/20 border border-[#D7E7F5] rounded-2xl p-6 shadow-xs relative overflow-hidden">
+      <div className="absolute right-0 top-0 w-64 h-64 bg-[#3B82F6]/5 rounded-full blur-3xl pointer-events-none -mr-12 -mt-12" />
 
       {(usingSample || usingCached) && (
         <div className="mb-3 inline-flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-semibold bg-amber-50 text-amber-900 border border-amber-200">
@@ -48,11 +48,11 @@ export const CurrentWeatherCard: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <div>
           <div className="flex items-center gap-2 mb-1 flex-wrap">
-            <h2 className="text-xl sm:text-2xl font-bold text-[#17352A]">{currentWeather.location}</h2>
+            <h2 className="text-xl sm:text-2xl font-bold text-[#0F2742]">{currentWeather.location}</h2>
             <SourceBadge source={currentWeather.source} authority={currentWeather.authority} size="sm" />
           </div>
-          <p className="text-xs text-[#6B7D74] flex items-center gap-1">
-            <Clock className="w-3.5 h-3.5" />{' '}
+          <p className="text-xs text-[#5D7188] flex items-center gap-1 font-mono">
+            <Clock className="w-3.5 h-3.5 text-[#3B82F6]" />{' '}
             {usingCached ? 'Cached observation' : 'Observed'}: {currentWeather.observedAt}
             {currentWeather.providerModel ? ` · model ${currentWeather.providerModel}` : ''}
           </p>
@@ -68,16 +68,16 @@ export const CurrentWeatherCard: React.FC = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
         <div className="flex items-center gap-4">
-          <div className="w-16 h-16 rounded-2xl bg-[#2E7D5B]/10 flex items-center justify-center text-[#2E7D5B]">
+          <div className="w-16 h-16 rounded-2xl bg-[#DCEEFF]/50 flex items-center justify-center text-[#1557B0]">
             <CloudRain className="w-10 h-10" />
           </div>
           <div>
-            <div className="text-4xl sm:text-5xl font-extrabold text-[#17352A] tracking-tight">
+            <div className="text-4xl sm:text-5xl font-extrabold text-[#0F2742] tracking-tight">
               {currentWeather.temperature != null
                 ? formatTemp(currentWeather.temperature, preferences.tempUnit)
                 : '—'}
             </div>
-            <div className="text-xs text-[#6B7D74] font-medium mt-0.5">
+            <div className="text-xs text-[#5D7188] font-medium mt-0.5">
               {currentWeather.feelsLike != null
                 ? `Feels like ${formatTemp(currentWeather.feelsLike, preferences.tempUnit)}`
                 : 'Apparent temperature unavailable'}{' '}
@@ -87,19 +87,19 @@ export const CurrentWeatherCard: React.FC = () => {
         </div>
 
         <div className="md:col-span-2 grid grid-cols-2 sm:grid-cols-4 gap-3">
-          <Metric icon={<Droplets className="w-3.5 h-3.5" />} label="Humidity"
+          <Metric icon={<Droplets className="w-3.5 h-3.5 text-[#06B6D4]" />} label="Humidity"
             value={currentWeather.humidity != null ? `${currentWeather.humidity}%` : '—'} />
-          <Metric icon={<Wind className="w-3.5 h-3.5" />} label="Wind"
+          <Metric icon={<Wind className="w-3.5 h-3.5 text-[#3B82F6]" />} label="Wind"
             value={currentWeather.windSpeed != null ? formatWind(currentWeather.windSpeed, preferences.windUnit) : '—'} />
-          <Metric icon={<CloudRain className="w-3.5 h-3.5" />} label="Rainfall"
+          <Metric icon={<CloudRain className="w-3.5 h-3.5 text-[#1557B0]" />} label="Rainfall"
             value={currentWeather.rainfall != null ? `${currentWeather.rainfall} mm` : '—'} />
-          <Metric icon={<Gauge className="w-3.5 h-3.5" />} label="Pressure"
+          <Metric icon={<Gauge className="w-3.5 h-3.5 text-[#5D7188]" />} label="Pressure"
             value={currentWeather.pressure != null ? `${currentWeather.pressure} hPa` : '—'} />
         </div>
       </div>
 
       {expiredAlerts && expiredAlerts.length > 0 && (
-        <p className="mt-4 text-[11px] text-[#6B7D74]">
+        <p className="mt-4 text-[11px] text-[#5D7188]">
           {expiredAlerts.length} expired alert(s) on record — shown for transparency only, never as current guidance.
         </p>
       )}
@@ -108,10 +108,10 @@ export const CurrentWeatherCard: React.FC = () => {
 };
 
 const Metric: React.FC<{ icon: React.ReactNode; label: string; value: string }> = ({ icon, label, value }) => (
-  <div className="bg-white/80 backdrop-blur-xs border border-[#DCEAE2] p-3 rounded-xl">
-    <div className="text-xs text-[#6B7D74] flex items-center gap-1 mb-1">
+  <div className="bg-white/80 backdrop-blur-xs border border-[#D7E7F5] p-3 rounded-xl">
+    <div className="text-xs text-[#5D7188] flex items-center gap-1 mb-1 font-medium">
       {icon} {label}
     </div>
-    <div className="text-base font-bold text-[#17352A]">{value}</div>
+    <div className="text-base font-bold text-[#0F2742]">{value}</div>
   </div>
 );

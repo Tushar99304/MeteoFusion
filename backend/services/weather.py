@@ -87,6 +87,7 @@ class WeatherProvider(Protocol):
         timezone: Optional[str] = None,
         target_date: Optional[str] = None,
         utc_offset_seconds: Optional[int] = None,
+        model_override: Optional[str] = None,
     ) -> WeatherBundle:
         ...
 
@@ -210,6 +211,7 @@ class OpenMeteoProvider:
         timezone: Optional[str] = None,
         target_date: Optional[str] = None,
         utc_offset_seconds: Optional[int] = None,
+        model_override: Optional[str] = None,
     ) -> WeatherBundle:
         if config.SIMULATE_WEATHER_FAILURE:  # demo switch: force the abstention path
             raise UpstreamError("open-meteo", "simulated upstream failure (SIMULATE_WEATHER_FAILURE=true)")
@@ -231,9 +233,9 @@ class OpenMeteoProvider:
                     latitude, longitude, target_date, timezone, timeframe=timeframe
                 )
             return await self._fetch_forecast(
-                latitude, longitude, timeframe, timezone, target_date=target_date
+                latitude, longitude, timeframe, timezone, target_date=target_date, model_override=model_override
             )
-        return await self._fetch_forecast(latitude, longitude, timeframe, timezone)
+        return await self._fetch_forecast(latitude, longitude, timeframe, timezone, model_override=model_override)
 
     # ---------------- live: current + up to 2 forecast days ----------------
     async def _fetch_forecast(
@@ -243,6 +245,7 @@ class OpenMeteoProvider:
         timeframe: Timeframe,
         timezone: Optional[str],
         target_date: Optional[str] = None,
+        model_override: Optional[str] = None,
     ) -> WeatherBundle:
         # past_days=1 so "today" is always present even at 00:30 local time.
         params: Dict[str, Any] = {
@@ -268,7 +271,10 @@ class OpenMeteoProvider:
         else:
             params["past_days"] = 1
         model_name = ""
-        if getattr(config, "OPEN_METEO_MODEL", ""):
+        if model_override:
+            params["models"] = model_override
+            model_name = model_override
+        elif getattr(config, "OPEN_METEO_MODEL", ""):
             # Phase 5A: OPTIONAL single-model selection. Empty (default) => omit the param and let
             # Open-Meteo serve "best_match". This is NOT multi-model ensemble retrieval (out of
             # scope); only one model is requested and it is recorded on the bundle.

@@ -1,4 +1,4 @@
-# WeatherGPT — 48-hour build plan (Tue → Thu), Phase 1 done
+# MeteoFusion — 48-hour build plan (Tue → Thu), Phase 1 done
 
 Reference docs honoured: *Minimal Working Demo* = scope; *Technical Explanation & Judge Q&A* =
 architecture. Out of scope until after Thursday: multilingual, voice, GIS/map, push
@@ -136,7 +136,7 @@ Evidence → LLM: **only** the `Evidence` JSON (`model_dump()`), no chat history
 
 System prompt (final wording, matches the reference doc):
 
-> You are WeatherGPT's explanation layer. You are NOT a weather forecasting engine. Use ONLY the
+> You are MeteoFusion's explanation layer. You are NOT a weather forecasting engine. Use ONLY the
 > values present in the supplied evidence object. Do not invent, estimate, infer, calculate, or
 > modify weather numbers. Do not introduce weather facts absent from the evidence. If
 > `evidence_quality` is LOW or `validation.sufficient` is false, state that reliable weather

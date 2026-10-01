@@ -83,10 +83,10 @@ def test_all_providers_available(monkeypatch):
     
     ev, trace = _ask("What is the weather in Mumbai?")
     assert ev.status == "grounded", ev.abstain_reason
-    assert "open-meteo" in ev.weather.fused_sources
+    assert "ECMWF IFS HRES" in ev.weather.fused_sources
     assert "openweathermap" in ev.weather.fused_sources
     assert "tomorrowio" in ev.weather.fused_sources
-    assert len(ev.weather.fused_sources) == 3
+    assert len(ev.weather.fused_sources) == 6
     assert ev.evidence_quality in ["HIGH", "MEDIUM"]
     
     # Verify stages contain validate, quality, advise, llm, grounding
@@ -106,7 +106,7 @@ def test_owm_unavailable(monkeypatch):
     ev, trace = _ask("What is the weather in Mumbai?")
     assert ev.status == "grounded", ev.abstain_reason
     assert "openweathermap" not in ev.weather.fused_sources
-    assert len(ev.weather.fused_sources) == 2
+    assert len(ev.weather.fused_sources) == 5
 
 # C. Tomorrow.io unavailable
 def test_tomorrowio_unavailable(monkeypatch):
@@ -116,7 +116,7 @@ def test_tomorrowio_unavailable(monkeypatch):
     
     ev, trace = _ask("What is the weather in Mumbai?")
     assert ev.status == "grounded", ev.abstain_reason
-    assert len(ev.weather.fused_sources) == 2
+    assert len(ev.weather.fused_sources) == 5
 
 # D. Open-Meteo unavailable
 def test_open_meteo_unavailable(monkeypatch):
@@ -136,8 +136,8 @@ def test_one_provider_available(monkeypatch):
     
     ev, trace = _ask("What is the weather in Mumbai?")
     assert ev.status == "grounded", ev.abstain_reason
-    assert len(ev.weather.fused_sources) == 1
-    assert ev.weather.source_agreement == "Single-source / limited evidence"
+    assert len(ev.weather.fused_sources) == 4
+    assert ev.weather.source_agreement == "Multi-Model Consensus"
     # A single source capped score defaults to MEDIUM or HIGH depending on fallback.
     assert ev.evidence_quality in ["MEDIUM", "HIGH", "LOW"]
 
@@ -217,10 +217,16 @@ def test_sachet_alert_with_fusion(monkeypatch):
 
 # J. Complete user request through advisory
 def test_advisory_fusion(monkeypatch):
-    # Heavy rain to trigger advisory
-    _mock_open_meteo(monkeypatch, precip=50.0)
-    _mock_openweathermap(monkeypatch, precip=55.0)
-    _mock_tomorrowio(monkeypatch, precip=48.0)
+    from backend.services import alerts
+    from backend.models import AlertsEvidence
+    async def no_alerts(*args, **kwargs):
+        return AlertsEvidence(state="checked", source="NDMA SACHET (CAP/RSS)", authority="official", mode="live", items=[])
+    monkeypatch.setattr(alerts, "check_alerts", no_alerts)
+
+    # Heavy rain to trigger strong advisory (>= 115 mm for HIGH)
+    _mock_open_meteo(monkeypatch, precip=120.0)
+    _mock_openweathermap(monkeypatch, precip=125.0)
+    _mock_tomorrowio(monkeypatch, precip=118.0)
     
     ev, trace = _ask("Is it safe to travel to Mumbai?")
     assert ev.status == "grounded"

@@ -120,7 +120,7 @@ AMBIGUITY_MIN_POP = _i("AMBIGUITY_MIN_POP", 100000)
 # "none" disables; "nominatim" = OSM fallback for towns GeoNames misses (e.g. Lonavala -> 0 results).
 GEO_FALLBACK = _s("GEO_FALLBACK", "nominatim").lower()
 NOMINATIM_URL = _s("NOMINATIM_URL", "https://nominatim.openstreetmap.org/search")
-NOMINATIM_USER_AGENT = _s("NOMINATIM_USER_AGENT", "WeatherGPT-MVP/0.1 (SIH26068 student prototype)")
+NOMINATIM_USER_AGENT = _s("NOMINATIM_USER_AGENT", "MeteoFusion-MVP/0.1 (SIH26068 student prototype)")
 
 # ---------------------------------------------------------------- Alerts (Phase 2)
 SACHET_ENABLED = _b("SACHET_ENABLED", True)
@@ -128,7 +128,7 @@ SACHET_RSS_BASE = _s("SACHET_RSS_BASE", "https://sachet.ndma.gov.in/cap_public_w
 SACHET_CAP_URL = _s(
     "SACHET_CAP_URL", "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier={id}"
 )
-SACHET_USER_AGENT = _s("SACHET_USER_AGENT", "WeatherGPT-MVP/0.1 (SIH26068 student prototype)")
+SACHET_USER_AGENT = _s("SACHET_USER_AGENT", "MeteoFusion-MVP/0.1 (SIH26068 student prototype)")
 ALERT_CACHE_TTL_S = _i("ALERT_CACHE_TTL_S", 300)   # polite polling: reuse feed for N seconds
 ALERT_MAX_AGE_H = _i("ALERT_MAX_AGE_H", 24)        # ignore official alerts older than this
 ALERT_DETAIL_LIMIT = _i("ALERT_DETAIL_LIMIT", 8)   # max CAP records fetched per query
@@ -169,3 +169,25 @@ RANGES = {
     "wind_kmh": (0.0, 400.0),
     "humidity_pct": (0.0, 100.0),
 }
+
+# ---------------------------------------------------------------- Historical Skill Calibration (Phase 1)
+CALIBRATION_FILE_PATH = _s("CALIBRATION_FILE_PATH", str(BASE_DIR / "calibration.json"))
+CALIBRATION_LEADTIMES_FILE_PATH = _s(
+    "CALIBRATION_LEADTIMES_FILE_PATH", str(BASE_DIR / "calibration_leadtimes.json")
+)
+CALIBRATION_PREVIOUS_RUNS_URL = _s(
+    "CALIBRATION_PREVIOUS_RUNS_URL", "https://previous-runs-api.open-meteo.com/v1/forecast"
+)
+CALIBRATION_ARCHIVE_URL = _s(
+    "CALIBRATION_ARCHIVE_URL", "https://archive-api.open-meteo.com/v1/archive"
+)
+CALIBRATION_LOCATION_NAME = _s("CALIBRATION_LOCATION_NAME", "Mumbai")
+CALIBRATION_LATITUDE = _f("CALIBRATION_LATITUDE", 19.0760)
+CALIBRATION_LONGITUDE = _f("CALIBRATION_LONGITUDE", 72.8777)
+CALIBRATION_LEAD_TIME = _s("CALIBRATION_LEAD_TIME", "+24h")
+CALIBRATION_WINDOW_DAYS = _i("CALIBRATION_WINDOW_DAYS", 30)
+CALIBRATION_START_DATE = _s("CALIBRATION_START_DATE", "2026-08-26")
+CALIBRATION_END_DATE = _s("CALIBRATION_END_DATE", "2026-09-24")
+CALIBRATION_EPSILON = _f("CALIBRATION_EPSILON", 0.01)
+CALIBRATION_MIN_SAMPLES = _i("CALIBRATION_MIN_SAMPLES", 24)
+

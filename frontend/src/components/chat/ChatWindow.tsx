@@ -53,7 +53,7 @@ export const ChatWindow: React.FC = () => {
     } catch {
       addMessage({
         sender: 'assistant',
-        text: 'Sorry — the WeatherGPT backend could not be reached and no cached answer is available. Please check your connection and try again.',
+        text: 'Sorry — the MeteoFusion backend could not be reached and no cached answer is available. Please check your connection and try again.',
       });
     } finally {
       setIsLoading(false);
@@ -61,39 +61,40 @@ export const ChatWindow: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col h-[calc(100vh-8.5rem)] bg-white border border-[#DCEAE2] rounded-2xl shadow-xs overflow-hidden">
+    <div className="flex flex-col h-[calc(100dvh-13.5rem)] sm:h-[calc(100vh-10rem)] min-h-[440px] bg-white/90 backdrop-blur-md border border-[#D7E7F5] rounded-2xl shadow-xs overflow-hidden">
       {/* Chat Header */}
-      <div className="px-5 py-3.5 border-b border-[#DCEAE2] bg-[#F7FBF8] flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-xl bg-[#2E7D5B] text-white flex items-center justify-center">
+      <div className="px-3.5 sm:px-5 py-3 sm:py-3.5 border-b border-[#D7E7F5] bg-[#F5FAFF]/80 flex items-center justify-between">
+        <div className="flex items-center gap-2.5 sm:gap-3">
+          <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-[#1557B0] to-[#3B82F6] text-white flex items-center justify-center shadow-xs shrink-0">
             <Bot className="w-4 h-4" />
           </div>
           <div>
-            <h2 className="font-bold text-sm text-[#17352A]">WeatherGPT Intelligence</h2>
-            <p className="text-[11px] text-[#6B7D74]">Grounded Conversational Weather Support</p>
+            <h2 className="font-bold text-xs sm:text-sm text-[#0F2742]">MeteoFusion Intelligence</h2>
+            <p className="text-[10px] sm:text-[11px] text-[#5D7188]">Grounded Multi-Model Atmospheric Reasoning</p>
           </div>
         </div>
 
         <button
           onClick={clearChat}
-          className="p-1.5 rounded-lg text-[#6B7D74] hover:bg-[#E8F5EE] hover:text-red-600 transition-colors"
+          className="p-2 rounded-xl text-[#5D7188] hover:bg-[#DCEEFF]/50 hover:text-red-600 transition-colors touch-manipulation"
           title="Clear Chat History"
+          aria-label="Clear Chat History"
         >
           <Trash2 className="w-4 h-4" />
         </button>
       </div>
 
       {/* Messages Scroll Area */}
-      <div className="flex-1 overflow-y-auto p-4 lg:p-6 space-y-4">
+      <div className="flex-1 overflow-y-auto p-3 sm:p-4 lg:p-6 space-y-3 sm:space-y-4">
         {messages.map((msg) => (
           <ChatMessage key={msg.id} message={msg} />
         ))}
 
         {isLoading && (
           <div className="flex justify-start my-3">
-            <div className="bg-[#E8F5EE] border border-[#6BAF92]/30 p-3.5 rounded-2xl rounded-tl-xs text-xs text-[#2E7D5B] flex items-center gap-2">
-              <Sparkles className="w-4 h-4 animate-spin" />
-              <span>Retrieving weather evidence, checking official alerts & validating…</span>
+            <div className="bg-[#DCEEFF]/40 border border-[#3B82F6]/30 p-3 sm:p-3.5 rounded-2xl rounded-tl-xs text-xs text-[#1557B0] flex items-center gap-2">
+              <Sparkles className="w-4 h-4 animate-spin text-[#06B6D4] shrink-0" />
+              <span className="font-medium">Synthesizing meteorological evidence, verifying alert registries…</span>
             </div>
           </div>
         )}
@@ -102,7 +103,7 @@ export const ChatWindow: React.FC = () => {
       </div>
 
       {/* Input Area */}
-      <div className="p-4 border-t border-[#DCEAE2] bg-white">
+      <div className="p-3 sm:p-4 border-t border-[#D7E7F5] bg-white">
         <ChatInput onSend={handleSend} isLoading={isLoading} />
       </div>
     </div>

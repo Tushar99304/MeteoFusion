@@ -1,4 +1,4 @@
-# WeatherGPT — SIH26068 Minimal Working Demo
+# MeteoFusion — SIH26068 Minimal Working Demo
 
 **Status: Phases 1–4 complete and tested live; Phase 5A (provider registry + model metadata) added;
 U1 (disaster scenarios + official alert UX) added — see `docs/U1_REPORT.md`.
@@ -15,14 +15,14 @@ with every number, source, timestamp, alert and risk word in it.
 > the model — decides whether that sentence may be shown. If Groq is missing, slow or wrong, the
 > user still gets a grounded answer from the same numbers.
 
-> Positioning (say this in the pitch): WeatherGPT is **not** a weather prediction model.
+> Positioning (say this in the pitch): MeteoFusion is **not** a weather prediction model.
 > It is a **grounded conversational weather intelligence layer**. The LLM never becomes the
 > source of meteorological truth — every number comes from retrieved, validated evidence.
 
 **U1 (disaster scenarios + official alert UX).** An active, location-verified NDMA/SACHET alert
 now dominates the entire UX: the CAP `instruction` is surfaced verbatim and attributed (advisory
 factors + deterministic answer, so it needs no LLM key), the page leads with a prominent
-official-alert banner before any model-weather summary, and "What WeatherGPT recommends" (the
+official-alert banner before any model-weather summary, and "What MeteoFusion recommends" (the
 deterministic advisory) sits directly under the answer. Disaster-oriented demo chips (heavy
 rain/flood, thunderstorm/lightning, strong winds, fog, heat) exercise the **existing**
 evidence/advisory pipeline — no new thresholds, no disaster-prediction model, and alerts that

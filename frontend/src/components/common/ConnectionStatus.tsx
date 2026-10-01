@@ -1,64 +1,135 @@
 import React from 'react';
 import { useWeatherStore } from '../../store/useWeatherStore';
-import { RefreshCw, Wifi, WifiOff, AlertTriangle } from 'lucide-react';
+import { RefreshCw, Wifi, Clock, AlertTriangle } from 'lucide-react';
 
 /**
- * Reflects the REAL backend connection state from /health and the last query:
- * REAL (backend reachable, live evidence), DEMO (explicit sample-data mode),
- * DEGRADED (backend unreachable, no cache), OFFLINE (using cached evidence).
+ * 1. Backend Connectivity Badge
+ * Reflects whether the FastAPI backend is currently reachable and responsive:
+ * - Reachable -> LIVE BACKEND
+ * - Unreachable -> BACKEND OFFLINE
  */
-export const ConnectionStatus: React.FC = () => {
-  const { connection, syncData, usingSample, usingCached } = useWeatherStore();
+export const BackendConnectivityBadge: React.FC<{ className?: string }> = ({ className = '' }) => {
+  const { connection, checkHealth, syncData } = useWeatherStore();
+  const isReachable = connection.backendReachable && connection.apiStatus !== 'OFFLINE';
 
-  if (connection.syncInProgress) {
+  if (isReachable) {
     return (
-      <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-emerald-50 text-[#2E7D5B] text-xs font-medium border border-[#DCEAE2]">
-        <RefreshCw className="w-3.5 h-3.5 animate-spin text-[#2E7D5B]" />
-        <span>Checking weather evidence…</span>
+      <div
+        className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-50 text-emerald-800 text-xs font-semibold border border-emerald-200 shadow-2xs ${className}`}
+        title="FastAPI backend is reachable and responsive"
+      >
+        <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
+        <span>LIVE BACKEND</span>
       </div>
     );
   }
 
-  if (!connection.isOnline || usingCached || connection.apiStatus === 'OFFLINE') {
+  return (
+    <button
+      onClick={() => {
+        void checkHealth();
+        void syncData();
+      }}
+      className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-rose-50 text-rose-800 text-xs font-semibold border border-rose-200 hover:bg-rose-100 transition-colors shadow-2xs ${className}`}
+      title="FastAPI backend is unreachable — click to retry connection"
+    >
+      <span className="w-2 h-2 rounded-full bg-rose-500 shrink-0" />
+      <span>BACKEND OFFLINE</span>
+    </button>
+  );
+};
+
+/**
+ * 2. Weather Data Freshness Badge
+ * Reflects the freshness of the latest weather request:
+ * - Fresh data returned -> LIVE WEATHER · Updated HH:MM
+ * - Provider failed but cached snapshot is displayed -> CACHED WEATHER · HH:MM
+ * - Sync in progress -> Syncing Weather…
+ * - Explicit Demo/Sample mode -> DEMO WEATHER · Sample
+ */
+export const WeatherFreshnessBadge: React.FC<{ className?: string }> = ({ className = '' }) => {
+  const { connection, usingCached, usingSample, syncData, currentWeather, lastQueriedAt } = useWeatherStore();
+
+  if (connection.syncInProgress) {
     return (
-      <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-amber-50 text-amber-800 text-xs font-medium border border-amber-200">
-        <WifiOff className="w-3.5 h-3.5 text-amber-600" />
-        <span>Offline {connection.lastSyncedAt ? `· cached ${connection.lastSyncedAt}` : '· no cache'}</span>
+      <div
+        className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-blue-50 text-[#1557B0] text-xs font-medium border border-[#D7E7F5] shadow-2xs ${className}`}
+        title="Synchronizing weather evidence from provider"
+      >
+        <RefreshCw className="w-3.5 h-3.5 animate-spin text-[#3B82F6] shrink-0" />
+        <span>Syncing Weather…</span>
       </div>
     );
   }
 
   if (usingSample || connection.apiStatus === 'DEMO') {
     return (
-      <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-amber-50 text-amber-800 text-xs font-medium border border-amber-200">
-        <AlertTriangle className="w-3.5 h-3.5 text-amber-600" />
-        <span>Sample demo data</span>
+      <div
+        className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-sky-50 text-sky-800 text-xs font-semibold border border-sky-200 shadow-2xs ${className}`}
+        title="Displaying bundled demonstration sample data"
+      >
+        <AlertTriangle className="w-3.5 h-3.5 text-sky-600 shrink-0" />
+        <span>DEMO WEATHER · Sample</span>
       </div>
     );
   }
 
-  if (connection.apiStatus === 'DEGRADED') {
+  if (usingCached) {
+    const time =
+      connection.lastSyncedAt ||
+      lastQueriedAt ||
+      (currentWeather?.observedAt && currentWeather.observedAt !== '—' ? currentWeather.observedAt : '00:00');
+
     return (
       <button
-        onClick={() => syncData()}
-        title="Backend not reachable — click to retry"
-        className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-amber-50 text-amber-800 text-xs font-medium border border-amber-200 hover:bg-amber-100 transition-colors"
+        onClick={() => void syncData()}
+        className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-amber-50 text-amber-900 text-xs font-semibold border border-amber-200 hover:bg-amber-100 transition-colors shadow-2xs ${className}`}
+        title="Weather provider failed; displaying cached snapshot — click to retry"
       >
-        <AlertTriangle className="w-3.5 h-3.5 text-amber-600" />
-        <span>Backend unreachable · retry</span>
+        <Clock className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+        <span>CACHED WEATHER · {time}</span>
+      </button>
+    );
+  }
+
+  if (currentWeather) {
+    const time =
+      connection.lastSyncedAt ||
+      lastQueriedAt ||
+      (currentWeather.observedAt && currentWeather.observedAt !== '—' ? currentWeather.observedAt : 'recent');
+
+    return (
+      <button
+        onClick={() => void syncData()}
+        className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-blue-50/80 text-[#1557B0] text-xs font-semibold border border-[#BFDBFE] hover:bg-[#DCEEFF] transition-colors shadow-2xs ${className}`}
+        title="Live weather provider data — click to refresh"
+      >
+        <Wifi className="w-3.5 h-3.5 text-[#3B82F6] shrink-0" />
+        <span>LIVE WEATHER · Updated {time}</span>
       </button>
     );
   }
 
   return (
     <button
-      onClick={() => syncData()}
-      title="Click to refresh evidence from the WeatherGPT backend"
-      className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-[#E8F5EE] text-[#2E7D5B] text-xs font-medium border border-[#6BAF92]/40 hover:bg-[#2E7D5B] hover:text-white transition-colors"
+      onClick={() => void syncData()}
+      className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-50 text-slate-700 text-xs font-medium border border-slate-200 hover:bg-slate-100 transition-colors shadow-2xs ${className}`}
+      title="No weather data available — click to fetch"
     >
-      <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-      <Wifi className="w-3.5 h-3.5" />
-      <span>Live · {connection.lastSyncedAt || 'connecting…'}</span>
+      <RefreshCw className="w-3.5 h-3.5 text-slate-500 shrink-0" />
+      <span>FETCH WEATHER</span>
     </button>
+  );
+};
+
+/**
+ * Composite ConnectionStatus rendering both Backend Connectivity and Weather Freshness.
+ */
+export const ConnectionStatus: React.FC<{ className?: string }> = ({ className = '' }) => {
+  return (
+    <div className={`inline-flex flex-wrap items-center gap-2 ${className}`}>
+      <BackendConnectivityBadge />
+      <WeatherFreshnessBadge />
+    </div>
   );
 };

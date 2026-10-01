@@ -7,38 +7,38 @@ export const SettingsPage: React.FC = () => {
 
   return (
     <div className="space-y-6 max-w-3xl mx-auto">
-      <div>
-        <h1 className="text-xl sm:text-2xl font-bold text-[#17352A] flex items-center gap-2">
-          <Settings className="w-6 h-6 text-[#2E7D5B]" />
-          Application Preferences & System Configuration
+      <div className="bg-white/80 backdrop-blur-md p-5 rounded-2xl border border-[#D7E7F5] shadow-xs">
+        <h1 className="text-xl sm:text-2xl font-bold text-[#0F2742] flex items-center gap-2.5">
+          <Settings className="w-6 h-6 text-[#3B82F6]" />
+          Platform Preferences & System Configuration
         </h1>
-        <p className="text-xs text-[#6B7D74]">
-          Customize units, language, notification preferences, offline cache and demo mode
+        <p className="text-xs text-[#5D7188] mt-1 leading-relaxed">
+          Configure meteorological units, localized interface language, emergency push alerts, and sandbox sample modes.
         </p>
       </div>
 
       {/* Units & Measurement */}
-      <div className="bg-white border border-[#DCEAE2] rounded-2xl p-5 shadow-xs space-y-4">
-        <h3 className="font-bold text-sm text-[#17352A] border-b border-[#DCEAE2] pb-2 flex items-center gap-2">
-          <Thermometer className="w-4 h-4 text-[#2E7D5B]" /> Measurement Units
+      <div className="card-3d bg-white border border-[#D7E7F5] rounded-2xl p-6 shadow-xs space-y-4">
+        <h3 className="font-bold text-sm text-[#0F2742] border-b border-[#D7E7F5] pb-3 flex items-center gap-2">
+          <Thermometer className="w-4 h-4 text-[#3B82F6]" /> Meteorological Units of Measure
         </h3>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
-          <div className="flex items-center justify-between p-3 bg-[#F7FBF8] rounded-xl border border-[#DCEAE2]">
-            <span className="font-medium text-[#17352A]">Temperature Unit</span>
-            <div className="flex items-center gap-1 bg-white p-1 rounded-lg border border-[#DCEAE2]">
+          <div className="flex items-center justify-between p-3.5 bg-[#F5FAFF] rounded-xl border border-[#D7E7F5]">
+            <span className="font-medium text-[#0F2742]">Temperature Scale</span>
+            <div className="flex items-center gap-1 bg-white p-1 rounded-lg border border-[#D7E7F5]">
               <button
                 onClick={() => setTempUnit('°C')}
-                className={`px-2.5 py-1 rounded font-bold transition-colors ${
-                  preferences.tempUnit === '°C' ? 'bg-[#2E7D5B] text-white' : 'text-[#6B7D74]'
+                className={`px-3 py-1 rounded-md font-bold transition-all ${
+                  preferences.tempUnit === '°C' ? 'bg-[#1557B0] text-white shadow-2xs' : 'text-[#5D7188] hover:text-[#0F2742]'
                 }`}
               >
                 °C
               </button>
               <button
                 onClick={() => setTempUnit('°F')}
-                className={`px-2.5 py-1 rounded font-bold transition-colors ${
-                  preferences.tempUnit === '°F' ? 'bg-[#2E7D5B] text-white' : 'text-[#6B7D74]'
+                className={`px-3 py-1 rounded-md font-bold transition-all ${
+                  preferences.tempUnit === '°F' ? 'bg-[#1557B0] text-white shadow-2xs' : 'text-[#5D7188] hover:text-[#0F2742]'
                 }`}
               >
                 °F
@@ -46,21 +46,21 @@ export const SettingsPage: React.FC = () => {
             </div>
           </div>
 
-          <div className="flex items-center justify-between p-3 bg-[#F7FBF8] rounded-xl border border-[#DCEAE2]">
-            <span className="font-medium text-[#17352A]">Wind Speed Unit</span>
-            <div className="flex items-center gap-1 bg-white p-1 rounded-lg border border-[#DCEAE2]">
+          <div className="flex items-center justify-between p-3.5 bg-[#F5FAFF] rounded-xl border border-[#D7E7F5]">
+            <span className="font-medium text-[#0F2742]">Wind Velocity Scale</span>
+            <div className="flex items-center gap-1 bg-white p-1 rounded-lg border border-[#D7E7F5]">
               <button
                 onClick={() => setWindUnit('km/h')}
-                className={`px-2.5 py-1 rounded font-bold transition-colors ${
-                  preferences.windUnit === 'km/h' ? 'bg-[#2E7D5B] text-white' : 'text-[#6B7D74]'
+                className={`px-3 py-1 rounded-md font-bold transition-all ${
+                  preferences.windUnit === 'km/h' ? 'bg-[#1557B0] text-white shadow-2xs' : 'text-[#5D7188] hover:text-[#0F2742]'
                 }`}
               >
                 km/h
               </button>
               <button
                 onClick={() => setWindUnit('m/s')}
-                className={`px-2.5 py-1 rounded font-bold transition-colors ${
-                  preferences.windUnit === 'm/s' ? 'bg-[#2E7D5B] text-white' : 'text-[#6B7D74]'
+                className={`px-3 py-1 rounded-md font-bold transition-all ${
+                  preferences.windUnit === 'm/s' ? 'bg-[#1557B0] text-white shadow-2xs' : 'text-[#5D7188] hover:text-[#0F2742]'
                 }`}
               >
                 m/s
@@ -71,9 +71,9 @@ export const SettingsPage: React.FC = () => {
       </div>
 
       {/* Language */}
-      <div className="bg-white border border-[#DCEAE2] rounded-2xl p-5 shadow-xs space-y-4">
-        <h3 className="font-bold text-sm text-[#17352A] border-b border-[#DCEAE2] pb-2 flex items-center gap-2">
-          <Languages className="w-4 h-4 text-[#2E7D5B]" /> Multilingual UI & Voice Interface
+      <div className="card-3d bg-white border border-[#D7E7F5] rounded-2xl p-6 shadow-xs space-y-4">
+        <h3 className="font-bold text-sm text-[#0F2742] border-b border-[#D7E7F5] pb-3 flex items-center gap-2">
+          <Languages className="w-4 h-4 text-[#3B82F6]" /> Multilingual Localization & Dialect
         </h3>
 
         <div className="flex flex-wrap gap-2 text-xs">
@@ -85,10 +85,10 @@ export const SettingsPage: React.FC = () => {
             <button
               key={l.id}
               onClick={() => setLanguage(l.id as any)}
-              className={`px-4 py-2 rounded-xl font-bold border transition-colors ${
+              className={`px-4 py-2.5 rounded-xl font-bold border transition-all ${
                 preferences.language === l.id
-                  ? 'bg-[#2E7D5B] text-white border-[#2E7D5B]'
-                  : 'bg-[#F7FBF8] text-[#17352A] border-[#DCEAE2] hover:bg-[#E8F5EE]'
+                  ? 'bg-[#1557B0] text-white border-[#1557B0] shadow-2xs'
+                  : 'bg-[#F5FAFF] text-[#0F2742] border-[#D7E7F5] hover:bg-[#DCEEFF]/40'
               }`}
             >
               {l.label}
@@ -98,22 +98,22 @@ export const SettingsPage: React.FC = () => {
       </div>
 
       {/* Emergency Notifications & SMS Fallback */}
-      <div className="bg-white border border-[#DCEAE2] rounded-2xl p-5 shadow-xs space-y-4">
-        <h3 className="font-bold text-sm text-[#17352A] border-b border-[#DCEAE2] pb-2 flex items-center gap-2">
+      <div className="card-3d bg-white border border-[#D7E7F5] rounded-2xl p-6 shadow-xs space-y-4">
+        <h3 className="font-bold text-sm text-[#0F2742] border-b border-[#D7E7F5] pb-3 flex items-center gap-2">
           <Radio className="w-4 h-4 text-red-600" /> Emergency Alert Delivery Preferences
         </h3>
 
-        <div className="flex items-center justify-between p-4 bg-[#F7FBF8] rounded-xl border border-[#DCEAE2] text-xs">
+        <div className="flex items-center justify-between p-4 bg-[#F5FAFF] rounded-xl border border-[#D7E7F5] text-xs">
           <div>
-            <span className="font-bold text-[#17352A] block">SMS Fallback for Critical Alerts</span>
-            <span className="text-[#6B7D74] text-[11px]">
-              If internet connectivity is unavailable, critical alerts may be delivered through SMS when configured on backend server.
+            <span className="font-bold text-[#0F2742] block">SMS Fallback for Critical Alerts</span>
+            <span className="text-[#5D7188] text-[11px] mt-0.5 block">
+              If active data connectivity drops, critical red alerts are dispatched through SMS telemetry when configured on server.
             </span>
           </div>
           <button
             onClick={() => setSmsAlerts(!preferences.smsAlertsEnabled)}
             className={`w-12 h-6 rounded-full p-1 transition-colors ${
-              preferences.smsAlertsEnabled ? 'bg-[#2E7D5B]' : 'bg-gray-300'
+              preferences.smsAlertsEnabled ? 'bg-[#1557B0]' : 'bg-gray-300'
             }`}
           >
             <div
@@ -125,29 +125,28 @@ export const SettingsPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Sample demo data (default OFF; the real backend is the default) */}
-      <div className="bg-white border border-[#DCEAE2] rounded-2xl p-5 shadow-xs space-y-4">
-        <h3 className="font-bold text-sm text-[#17352A] border-b border-[#DCEAE2] pb-2 flex items-center gap-2">
-          <Sparkles className="w-4 h-4 text-amber-600" /> Sample demo data
+      {/* Sample demo data */}
+      <div className="card-3d bg-white border border-[#D7E7F5] rounded-2xl p-6 shadow-xs space-y-4">
+        <h3 className="font-bold text-sm text-[#0F2742] border-b border-[#D7E7F5] pb-3 flex items-center gap-2">
+          <Sparkles className="w-4 h-4 text-amber-600" /> Demonstration Sandbox Dataset
         </h3>
 
-        <div className="flex items-center justify-between p-4 bg-amber-50 rounded-xl border border-amber-200 text-xs">
+        <div className="flex items-center justify-between p-4 bg-amber-50/70 rounded-xl border border-amber-200 text-xs">
           <div>
             <span className="font-bold text-amber-900 block">
-              Bundled SAMPLE dataset {preferences.demoMode ? '(currently ENABLED)' : '(currently OFF)'}
+              Pre-bundled Mock Bundle {preferences.demoMode ? '(currently ENABLED)' : '(currently OFF)'}
             </span>
-            <span className="text-amber-800 text-[11px] block mt-0.5">
-              OFF by default. When enabled, the app shows clearly-labelled fabricated sample data
-              for walkthroughs without a backend — it is never official or live data. Normal use
-              talks to the real WeatherGPT backend.
+            <span className="text-amber-800 text-[11px] block mt-0.5 leading-relaxed">
+              Disabled by default. When toggled, the application uses local synthetic data for demonstration without an active backend.
+              Normal operation is connected directly to the real MeteoFusion backend.
             </span>
           </div>
           <button
             onClick={toggleDemoMode}
-            className={`px-3 py-1.5 rounded-xl font-bold text-xs border transition-colors shrink-0 ml-3 ${
+            className={`px-3.5 py-2 rounded-xl font-bold text-xs border transition-all shrink-0 ml-4 shadow-2xs ${
               preferences.demoMode
                 ? 'bg-amber-600 text-white border-amber-700'
-                : 'bg-white text-gray-700 border-gray-300'
+                : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
             }`}
           >
             {preferences.demoMode ? 'SAMPLE DATA ON' : 'LIVE (DEFAULT)'}

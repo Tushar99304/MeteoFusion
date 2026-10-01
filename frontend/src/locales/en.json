@@ -1,12 +1,12 @@
 {
   "app": {
-    "title": "WeatherGPT",
+    "title": "MeteoFusion",
     "subtitle": "Trusted Weather Intelligence",
     "tagline": "Conversational meteorological forecasting grounded in official IMD and NDMA evidence"
   },
   "nav": {
     "overview": "Overview",
-    "chat": "WeatherGPT Chat",
+    "chat": "MeteoFusion Chat",
     "forecast": "Forecast",
     "map": "Live Map",
     "alerts": "Alerts",

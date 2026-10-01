@@ -20,6 +20,8 @@ import type {
   BackendHourlyPoint,
   BackendQueryResponse,
   BackendSource,
+  BackendCalibrationMetadata,
+  BackendAdaptiveWeightAudit,
 } from '../types/backend';
 import type {
   ChatMessage,
@@ -31,7 +33,48 @@ import type {
   WeatherAdvisory,
   WeatherAlert,
   WeatherEvidence,
+  CalibrationMetadata,
+  AdaptiveWeightAudit,
 } from '../types/index';
+
+export function mapCalibrationMetadata(b?: BackendCalibrationMetadata | null): CalibrationMetadata | undefined {
+  if (!b) return undefined;
+  return {
+    calibratedAt: b.calibrated_at,
+    evaluationPeriod: b.evaluation_period,
+    leadTime: b.lead_time,
+    location: b.location ?? undefined,
+    latitude: b.latitude ?? undefined,
+    longitude: b.longitude ?? undefined,
+    referenceDataset: b.reference_dataset,
+    metric: b.metric,
+    sampleCounts: b.sample_counts ?? {},
+    mae: b.mae ?? {},
+    rmse: b.rmse ?? undefined,
+    weights: b.weights ?? {},
+    epsilon: b.epsilon,
+    weightingScheme: b.weighting_scheme ?? undefined,
+    totalEvalSamples: b.total_eval_samples ?? undefined,
+    isValid: b.is_valid ?? undefined,
+  };
+}
+
+export function mapAdaptiveWeightAudit(b?: BackendAdaptiveWeightAudit | null): AdaptiveWeightAudit | undefined {
+  if (!b) return undefined;
+  return {
+    baseWeights: b.base_weights ?? {},
+    finalWeights: b.final_weights ?? {},
+    leadTime: b.lead_time,
+    region: b.region,
+    weatherRegime: b.weather_regime,
+    variable: b.variable,
+    calibrationStatus: b.calibration_status,
+    calibratedDimensions: b.calibrated_dimensions ?? [],
+    fallbackDimensions: b.fallback_dimensions ?? [],
+    adjustments: b.adjustments ?? {},
+    explanation: b.explanation,
+  };
+}
 
 /* ------------------------------------------------------------------ utils */
 
@@ -130,6 +173,28 @@ export function mapEvidence(ev: BackendEvidence): WeatherEvidence | undefined {
     conditionText: cur?.condition ?? ev.weather?.today?.condition ?? undefined,
     conditionCode: cur ? conditionToIcon(cur.condition, cur.weather_code) : undefined,
     // uvIndex / visibility intentionally omitted — the backend evidence does not contain them.
+    blendingMetadata: ev.weather?.blending_metadata ? {
+      region: ev.weather.blending_metadata.region,
+      season: ev.weather.blending_metadata.season,
+      weatherRegime: ev.weather.blending_metadata.weather_regime,
+      leadTimeHours: ev.weather.blending_metadata.lead_time_hours,
+      targetTime: ev.weather.blending_metadata.target_time ?? undefined,
+      models: ev.weather.blending_metadata.models.map((m: any) => ({
+        modelName: m.model_name,
+        weight: m.weight,
+        modelType: m.model_type ?? undefined,
+        temperatureC: m.temperature_c,
+        precipitationMm: m.precipitation_mm,
+        windSpeedKmh: m.wind_speed_kmh,
+      })),
+      extremeWeatherIndicators: ev.weather.blending_metadata.extreme_weather_indicators,
+      blendedTemperatureC: ev.weather.blending_metadata.blended_temperature_c,
+      blendedPrecipitationMm: ev.weather.blending_metadata.blended_precipitation_mm,
+      blendedWindSpeedKmh: ev.weather.blending_metadata.blended_wind_speed_kmh,
+      calibrationMode: ev.weather.blending_metadata.calibration_mode ?? 'FALLBACK',
+      calibrationMetadata: mapCalibrationMetadata(ev.weather.blending_metadata.calibration_metadata),
+      adaptiveAudit: mapAdaptiveWeightAudit(ev.weather.blending_metadata.adaptive_audit),
+    } : undefined,
   };
 }
 
@@ -363,6 +428,32 @@ export function mapQueryResponse(res: BackendQueryResponse): QueryResultView {
     ev.clarification ||
     'No grounded answer is available for this request.';
 
+  let blendingMetadata;
+  if (ev.weather?.blending_metadata) {
+    blendingMetadata = {
+      region: ev.weather.blending_metadata.region,
+      season: ev.weather.blending_metadata.season,
+      weatherRegime: ev.weather.blending_metadata.weather_regime,
+      leadTimeHours: ev.weather.blending_metadata.lead_time_hours,
+      targetTime: ev.weather.blending_metadata.target_time ?? undefined,
+      models: ev.weather.blending_metadata.models.map((m: any) => ({
+        modelName: m.model_name,
+        weight: m.weight,
+        modelType: m.model_type ?? undefined,
+        temperatureC: m.temperature_c,
+        precipitationMm: m.precipitation_mm,
+        windSpeedKmh: m.wind_speed_kmh,
+      })),
+      extremeWeatherIndicators: ev.weather.blending_metadata.extreme_weather_indicators,
+      blendedTemperatureC: ev.weather.blending_metadata.blended_temperature_c,
+      blendedPrecipitationMm: ev.weather.blending_metadata.blended_precipitation_mm,
+      blendedWindSpeedKmh: ev.weather.blending_metadata.blended_wind_speed_kmh,
+      calibrationMode: ev.weather.blending_metadata.calibration_mode ?? 'FALLBACK',
+      calibrationMetadata: mapCalibrationMetadata(ev.weather.blending_metadata.calibration_metadata),
+      adaptiveAudit: mapAdaptiveWeightAudit(ev.weather.blending_metadata.adaptive_audit),
+    };
+  }
+
   return {
     status: res.status,
     message,
@@ -397,6 +488,7 @@ export function mapQueryResponse(res: BackendQueryResponse): QueryResultView {
           admin1: ev.location.admin1 ?? undefined,
         }
       : undefined,
+    blendingMetadata,
   };
 }
 
